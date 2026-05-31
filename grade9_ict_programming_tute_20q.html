@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 9 ICT – Chapter 3: Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #20243a;
+    --accent: #f5a623;
+    --accent2: #4ecdc4;
+    --accent3: #ff6b6b;
+    --accent4: #a78bfa;
+    --text: #e8eaf0;
+    --muted: #8890a8;
+    --border: #2e3350;
+    --correct: #34d399;
+    --wrong: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- HEADER ---- */
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(245,166,35,0.15), transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+  }
+  header p {
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+  .progress-bar-wrap {
+    margin-top: 1.25rem;
+    background: var(--border);
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+  }
+  #global-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  .progress-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; }
+
+  /* ---- NAV ---- */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab.done { color: var(--correct); }
+
+  /* ---- MAIN ---- */
+  main { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  /* ---- SECTION HEADER ---- */
+  .sec-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+  .sec-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .sec-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  .sec-header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+  /* ---- CONTENT CARDS ---- */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card p, .card li { line-height: 1.7; color: var(--text); font-size: 0.95rem; }
+  .card ul { padding-left: 1.4rem; margin-top: 0.5rem; }
+  .card li { margin-bottom: 0.35rem; }
+
+  .highlight {
+    background: rgba(245,166,35,0.1);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 0.93rem;
+  }
+  .highlight.teal { background: rgba(78,205,196,0.1); border-color: var(--accent2); }
+  .highlight.purple { background: rgba(167,139,250,0.1); border-color: var(--accent4); }
+
+  .code-block {
+    background: #12141e;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    color: #a8d8ea;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .code-block .kw { color: #f5a623; }
+  .code-block .val { color: #4ecdc4; }
+  .code-block .cmt { color: #556080; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media(max-width:600px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Flowchart visual */
+  .flowchart {
+    background: #12141e;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    margin: 0.75rem 0;
+  }
+  .fc-start, .fc-end {
+    background: #4a6fa5;
+    color: #fff;
+    border-radius: 50px;
+    padding: 6px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .fc-process {
+    background: #d4812a;
+    color: #fff;
+    border-radius: 6px;
+    padding: 6px 20px;
+    font-size: 0.85rem;
+    text-align: center;
+    min-width: 150px;
+  }
+  .fc-decision {
+    background: #c9b030;
+    color: #000;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    padding: 20px 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    min-width: 120px;
+  }
+  .fc-io {
+    background: #4a8a5a;
+    color: #fff;
+    padding: 6px 20px;
+    font-size: 0.82rem;
+    transform: skewX(-10deg);
+    border-radius: 4px;
+    min-width: 150px;
+    text-align: center;
+  }
+  .fc-arrow {
+    width: 2px; height: 20px;
+    background: var(--muted);
+    position: relative;
+  }
+  .fc-arrow::after {
+    content: '▼';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--muted);
+    font-size: 0.6rem;
+  }
+  .fc-row { display: flex; align-items: center; gap: 1rem; }
+  .fc-label { font-size: 0.75rem; color: var(--muted); }
+
+  /* ---- QUIZ ---- */
+  .quiz-q {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .quiz-q .q-text {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  .q-num {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+  }
+  .options { display: flex; flex-direction: column; gap: 0.6rem; }
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s, background 0.2s, transform 0.1s;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.08);
+    transform: translateX(3px);
+  }
+  .option-btn.correct { border-color: var(--correct); background: rgba(52,211,153,0.12); color: var(--correct); }
+  .option-btn.wrong { border-color: var(--wrong); background: rgba(248,113,113,0.12); color: var(--wrong); }
+  .option-btn:disabled { cursor: default; transform: none; }
+
+  .feedback {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: rgba(52,211,153,0.12); color: var(--correct); border: 1px solid var(--correct); }
+  .feedback.bad { background: rgba(248,113,113,0.12); color: var(--wrong); border: 1px solid var(--wrong); }
+
+  /* ---- FILL IN BLANK ---- */
+  .fill-blank {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .fill-blank p { margin-bottom: 0.75rem; line-height: 1.8; }
+  .blank-input {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.9rem;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.88rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .blank-input:focus { border-color: var(--accent2); }
+  .blank-input.correct { border-color: var(--correct); }
+  .blank-input.wrong { border-color: var(--wrong); }
+  .check-btn {
+    margin-top: 0.75rem;
+    background: var(--accent2);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1.4rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .check-btn:hover { opacity: 0.85; transform: scale(0.98); }
+
+  /* ---- MATCH ---- */
+  .match-game { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.75rem; }
+  .match-item {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    font-size: 0.88rem;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .match-item.selected { border-color: var(--accent); background: rgba(245,166,35,0.1); }
+  .match-item.matched { border-color: var(--correct); background: rgba(52,211,153,0.1); cursor: default; color: var(--correct); }
+  .match-item.wrong-match { border-color: var(--wrong); background: rgba(248,113,113,0.1); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+  /* ---- BUTTONS ---- */
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #e8941a);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(245,166,35,0.3);
+    display: inline-block;
+    margin-top: 1rem;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,166,35,0.4); }
+
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 10px;
+    padding: 0.65rem 1.5rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 1rem;
+  }
+  .btn-secondary:hover { background: rgba(78,205,196,0.1); transform: translateY(-1px); }
+
+  /* score pill */
+  .score-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(52,211,153,0.12);
+    border: 1px solid var(--correct);
+    border-radius: 99px;
+    padding: 4px 14px;
+    color: var(--correct);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-left: 0.75rem;
+  }
+
+  /* concept chips */
+  .concept-chip {
+    display: inline-block;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid var(--accent4);
+    color: var(--accent4);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 3px 3px 3px 0;
+  }
+
+  /* result banner */
+  #result-banner {
+    display: none;
+    background: linear-gradient(135deg, #1a3a2a, #0f1117);
+    border: 2px solid var(--correct);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  #result-banner h2 { font-family: 'Syne', sans-serif; font-size: 1.6rem; color: var(--correct); }
+  #result-banner p { color: var(--muted); margin-top: 0.5rem; }
+  #result-banner .big-score { font-size: 3rem; font-weight: 800; color: var(--accent); font-family: 'Syne', sans-serif; }
+
+  .divider { height: 1px; background: var(--border); margin: 1.75rem 0; }
+  .tag-row { margin-top: 0.75rem; }
+
+  /* Scratch block styles */
+  .scratch-block {
+    display: inline-flex; align-items: center; gap: 6px;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 3px 3px 3px 0;
+  }
+  .sb-orange { background: #d4812a; color: #fff; }
+  .sb-yellow { background: #c9b030; color: #000; }
+  .sb-purple { background: #7c3aed; color: #fff; }
+  .sb-green { background: #2a7a4b; color: #fff; }
+
+  /* Steps list */
+  .steps { counter-reset: step; }
+  .steps li {
+    list-style: none;
+    counter-increment: step;
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* table */
+  .nice-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .nice-table th {
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    padding: 0.6rem 1rem;
+    text-align: left;
+  }
+  .nice-table td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+  .nice-table tr:last-child td { border-bottom: none; }
+  .nice-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="chapter-badge">Chapter 3 · Grade 9 ICT</span>
+    <h1>Programming 🖥️</h1>
+    <p>Interactive tutorial covering selection, repetition, nested loops & arrays in Scratch</p>
+    <div class="progress-bar-wrap"><div id="global-progress"></div></div>
+    <div class="progress-label" id="progress-label">0 of 5 sections visited</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" data-sec="s1" onclick="showSection('s1',this)">📋 Overview</div>
+  <div class="nav-tab" data-sec="s2" onclick="showSection('s2',this)">🔀 Selection</div>
+  <div class="nav-tab" data-sec="s3" onclick="showSection('s3',this)">🔄 Repetition</div>
+  <div class="nav-tab" data-sec="s4" onclick="showSection('s4',this)">🧩 Arrays</div>
+  <div class="nav-tab" data-sec="s5" onclick="showSection('s5',this)">✏️ Quiz</div>
+</nav>
+
+<main>
+
+<!-- ===== SECTION 1 – OVERVIEW ===== -->
+<div class="section active" id="s1">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(245,166,35,0.15)">📋</div>
+    <div>
+      <h2>What You'll Learn</h2>
+      <p>A roadmap of the whole chapter</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Chapter Topics</h3>
+    <ul>
+      <li>Multi-condition <strong>selection</strong> control structures</li>
+      <li>Using <strong>flowcharts</strong> to model problems</li>
+      <li><strong>Repetition</strong> (loop) control structures</li>
+      <li>Visual programs using Scratch with loops</li>
+      <li><strong>Nested repetition</strong> (loops inside loops)</li>
+      <li><strong>Arrays</strong> (called Lists in Scratch) and how to use them</li>
+      <li>Breaking a problem into steps (<strong>problem analysis</strong>)</li>
+    </ul>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🔑 Key Terms</h3>
+      <div class="tag-row">
+        <span class="concept-chip">Selection</span>
+        <span class="concept-chip">Condition</span>
+        <span class="concept-chip">Repetition</span>
+        <span class="concept-chip">Nested Loop</span>
+        <span class="concept-chip">Array / List</span>
+        <span class="concept-chip">Flowchart</span>
+        <span class="concept-chip">Scratch</span>
+        <span class="concept-chip">repeat until</span>
+        <span class="concept-chip">forever</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🛠️ Tool Used</h3>
+      <p>All programming examples use <strong>Scratch</strong> — a visual block-based language.</p>
+      <p style="margin-top:0.5rem;color:var(--muted);font-size:0.85rem;">Download from: scratch.mit.edu</p>
+      <div class="highlight teal" style="margin-top:0.75rem">Arrays are called <strong>Lists</strong> in Scratch.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Three Types of Control Structures</h3>
+    <table class="nice-table">
+      <thead><tr><th>Type</th><th>What it does</th><th>Scratch Block</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Sequence</strong></td><td>Steps run one after another</td><td><span class="scratch-block sb-orange">when 🚩 clicked …</span></td></tr>
+        <tr><td><strong>Selection</strong></td><td>Choose a path based on a condition</td><td><span class="scratch-block sb-yellow">if … then … else</span></td></tr>
+        <tr><td><strong>Repetition</strong></td><td>Repeat actions</td><td><span class="scratch-block sb-orange">repeat / repeat until / forever</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s2', document.querySelector('[data-sec=s2]'))">Start Learning →</button>
+</div>
+
+<!-- ===== SECTION 2 – SELECTION ===== -->
+<div class="section" id="s2">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(78,205,196,0.15)">🔀</div>
+    <div>
+      <h2>Selection Control Structures</h2>
+      <p>Sections 3.1 & 3.2</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3.1 – Simple Selection (if–else)</h3>
+    <p>A <strong>simple selection</strong> has <em>one condition</em> and <em>two options</em>. If the condition is true, one path is taken; otherwise the other path is taken.</p>
+    <div class="highlight">Example: Tossing a coin → "Head" or "Tails"</div>
+    <div class="flowchart">
+      <div class="fc-start">Start</div>
+      <div class="fc-arrow"></div>
+      <div class="fc-process">Toss the coin</div>
+      <div class="fc-arrow"></div>
+      <div class="fc-decision">Is it<br>Head?</div>
+      <div class="fc-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span class="fc-label">Yes →</span>
+          <div class="fc-io">Show "Head"</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span class="fc-label">↓ No</span>
+          <div class="fc-io">Show "Tails"</div>
+        </div>
+      </div>
+      <div class="fc-arrow"></div>
+      <div class="fc-end">End</div>
+    </div>
+    <div class="code-block"><span class="kw">if</span>  Side_landed = <span class="val">Head</span>  <span class="kw">then</span>
+  say <span class="val">"Head"</span> for 2 secs
+<span class="kw">else</span>
+  say <span class="val">"Tails"</span> for 2 secs</div>
+  </div>
+
+  <div class="card">
+    <h3>3.2 – Selection Out of Many Options</h3>
+    <p>When you need to choose from <strong>more than two options</strong>, you chain multiple <code>if–else</code> blocks together.</p>
+    <div class="highlight teal">Example: A dice can show values 1–6. Each value needs its own branch.</div>
+    <p style="margin-top:0.75rem">The structure checks conditions <strong>one by one</strong>. The first true condition executes its action; all others are skipped. If none match, the final <code>else</code> runs.</p>
+    <div class="code-block"><span class="kw">if</span>  Value = <span class="val">1</span>  <span class="kw">then</span>  say <span class="val">"1"</span>
+<span class="kw">else if</span>  Value = <span class="val">2</span>  <span class="kw">then</span>  say <span class="val">"2"</span>
+<span class="kw">else if</span>  Value = <span class="val">3</span>  <span class="kw">then</span>  say <span class="val">"3"</span>
+<span class="kw">else if</span>  Value = <span class="val">4</span>  <span class="kw">then</span>  say <span class="val">"4"</span>
+<span class="kw">else if</span>  Value = <span class="val">5</span>  <span class="kw">then</span>  say <span class="val">"5"</span>
+<span class="kw">else</span>                    say <span class="val">"6"</span></div>
+  </div>
+
+  <!-- Mini activity -->
+  <div class="card" style="border-color:var(--accent2)">
+    <h3 style="color:var(--accent2)">✍️ Quick Check</h3>
+    <p>A score-grading program checks: A (&gt;80), B (61–80), C (41–60), D (21–40), E (≤20). How many conditions does the <code>if–else</code> chain need?</p>
+    <div id="qc2" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">2</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">3</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,true)">4</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">5</button>
+    </div>
+    <div id="qc2-fb" class="feedback"></div>
+  </div>
+
+  <div class="divider"></div>
+  <button class="btn-primary" onclick="showSection('s3', document.querySelector('[data-sec=s3]'))">Next: Repetition →</button>
+</div>
+
+<!-- ===== SECTION 3 – REPETITION ===== -->
+<div class="section" id="s3">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(255,107,107,0.15)">🔄</div>
+    <div>
+      <h2>Repetition Control Structures</h2>
+      <p>Sections 3.3 – 3.6</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>What is Repetition?</h3>
+    <p>Repetition (a <strong>loop</strong>) means an action or group of actions is performed <em>again and again</em>. Both the <strong>start</strong> and <strong>end</strong> of the loop depend on a condition.</p>
+    <div class="highlight">Real-life example: A water pump runs until the tank is full.</div>
+  </div>
+
+  <div class="card">
+    <h3>3.4 – Three Scratch Repetition Blocks</h3>
+    <table class="nice-table">
+      <thead><tr><th>Block</th><th>When to use</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="scratch-block sb-orange">repeat 10</span></td>
+          <td>You know exactly how many times to loop</td>
+          <td>Display numbers 1–10</td>
+        </tr>
+        <tr>
+          <td><span class="scratch-block sb-orange">repeat until ◇</span></td>
+          <td>Loop until a condition becomes true</td>
+          <td>Display 1–5 (stop when A&gt;5)</td>
+        </tr>
+        <tr>
+          <td><span class="scratch-block sb-orange">forever</span></td>
+          <td>Loop never stops on its own</td>
+          <td>Display random numbers 1–100 endlessly</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🔢 repeat (fixed)</h3>
+      <div class="code-block"><span class="kw">set</span> A <span class="kw">to</span> <span class="val">1</span>
+<span class="kw">repeat</span> <span class="val">10</span>
+  say A
+  wait <span class="val">1</span> secs
+  change A by <span class="val">1</span></div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-top:0.5rem">Shows numbers 1 to 10, one per second.</p>
+    </div>
+    <div class="card">
+      <h3>🔁 repeat until (conditional)</h3>
+      <div class="code-block"><span class="kw">set</span> A <span class="kw">to</span> <span class="val">1</span>
+<span class="kw">repeat until</span> A > <span class="val">5</span>
+  say A
+  wait <span class="val">1</span> secs
+  change A by <span class="val">1</span></div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-top:0.5rem">Shows 1–5 then stops automatically.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Flowchart for Repetition (Numbers 1–5)</h3>
+    <div class="flowchart">
+      <div class="fc-start">Begin</div>
+      <div class="fc-arrow"></div>
+      <div class="fc-process">Number = 1</div>
+      <div class="fc-arrow"></div>
+      <div class="fc-decision">Number ≤ 5?</div>
+      <div class="fc-row">
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <span class="fc-label">↓ Yes</span>
+          <div class="fc-io">Show Number</div>
+          <div style="height:8px"></div>
+          <div class="fc-process">Number = Number + 1</div>
+          <div style="color:var(--muted);font-size:0.75rem;margin-top:4px">↖ loop back ↑</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <span class="fc-label">No →</span>
+          <div class="fc-end">End</div>
+        </div>
+      </div>
+    </div>
+    <div class="highlight purple">The loop variable (<em>Number</em>) must be <strong>initialised</strong> before the loop and <strong>updated</strong> inside it, otherwise the loop never ends!</div>
+  </div>
+
+  <div class="card">
+    <h3>3.6 – Nested Repetition</h3>
+    <p>A <strong>nested loop</strong> is a loop placed <em>inside</em> another loop. The inner loop completes <em>all</em> its iterations for every single iteration of the outer loop.</p>
+    <div class="code-block"><span class="kw">repeat</span> <span class="val">100</span>         <span class="cmt">← outer loop (100 times)</span>
+  <span class="kw">repeat</span> <span class="val">4</span>         <span class="cmt">← inner loop (4 times per outer step)</span>
+    move <span class="val">100</span> steps
+    turn <span class="val">90</span> degrees
+  change pen color by <span class="val">10</span>
+  turn <span class="val">5</span> degrees</div>
+    <div class="highlight">Result: 100 rotating squares drawn one by one, producing a colourful spiral pattern.</div>
+  </div>
+
+  <!-- Mini quiz -->
+  <div class="card" style="border-color:var(--accent3)">
+    <h3 style="color:var(--accent3)">✍️ Quick Check</h3>
+    <p>Which Scratch block would you use to keep displaying random numbers <em>indefinitely</em>?</p>
+    <div id="qc3" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">repeat 100</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">repeat until</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,true)">forever</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">if–else</button>
+    </div>
+    <div id="qc3-fb" class="feedback"></div>
+  </div>
+
+  <div class="divider"></div>
+  <button class="btn-primary" onclick="showSection('s4', document.querySelector('[data-sec=s4]'))">Next: Arrays →</button>
+</div>
+
+<!-- ===== SECTION 4 – ARRAYS ===== -->
+<div class="section" id="s4">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(167,139,250,0.15)">🧩</div>
+    <div>
+      <h2>Arrays (Lists in Scratch)</h2>
+      <p>Section 3.7</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why Arrays?</h3>
+    <p>If you need to store <strong>many values</strong>, using individual variables (marks_1, marks_2, … marks_50) becomes unmanageable. An <strong>array</strong> stores many items under a <em>single name</em>, using an <em>index</em> to refer to each item.</p>
+    <div class="highlight teal">An array is a <strong>data structure</strong> that can hold any number of values using a single variable name.</div>
+    <div class="two-col" style="margin-top:0.75rem">
+      <div style="background:#12141e;border-radius:10px;padding:1rem;text-align:center">
+        <div style="color:var(--muted);font-size:0.8rem;margin-bottom:0.5rem">❌ Without arrays (messy)</div>
+        <div class="code-block" style="font-size:0.75rem;margin:0">marks_1 = 78
+marks_2 = 85
+marks_3 = 69
+marks_4 = 93
+marks_5 = 87</div>
+      </div>
+      <div style="background:#12141e;border-radius:10px;padding:1rem;text-align:center">
+        <div style="color:var(--correct);font-size:0.8rem;margin-bottom:0.5rem">✅ With arrays (clean)</div>
+        <div class="code-block" style="font-size:0.75rem;margin:0">Marks = [78, 85,
+         69, 93, 87]
+
+item 1 of Marks → 78
+item 3 of Marks → 69</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Building an Array in Scratch</h3>
+    <ol class="steps">
+      <li>Go to the <strong>Data</strong> section in Scripts</li>
+      <li>Click <strong>"Make a List"</strong></li>
+      <li>Give the array a name (e.g., <code>Animal</code>)</li>
+      <li>Select <strong>"For this sprite only"</strong> or "For all sprites"</li>
+      <li>Click <strong>OK</strong></li>
+    </ol>
+    <div class="highlight" style="margin-top:0.75rem">After creating a list, Scratch shows you blocks to add, delete, insert, replace and retrieve items.</div>
+  </div>
+
+  <div class="card">
+    <h3>Key Array Operations in Scratch</h3>
+    <table class="nice-table">
+      <thead><tr><th>Block</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><span class="scratch-block sb-orange">add [thing] to [List]</span></td><td>Appends an item at the end</td></tr>
+        <tr><td><span class="scratch-block sb-orange">delete (1) of [List]</span></td><td>Removes item at position 1</td></tr>
+        <tr><td><span class="scratch-block sb-orange">insert [thing] at (1) of [List]</span></td><td>Inserts at a specific position</td></tr>
+        <tr><td><span class="scratch-block sb-orange">item (1) of [List]</span></td><td>Retrieves the item at position 1</td></tr>
+        <tr><td><span class="scratch-block sb-orange">length of [List]</span></td><td>Returns how many items are in the list</td></tr>
+        <tr><td><span class="scratch-block sb-orange">[List] contains [thing]?</span></td><td>Checks if a value exists in the list</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Entering & Displaying Array Data</h3>
+    <p><strong>To add items (e.g., 5 country names):</strong></p>
+    <div class="code-block"><span class="kw">delete</span> all of Country
+<span class="kw">repeat</span> <span class="val">5</span>
+  ask "Enter the Country" and wait
+  add answer to Country</div>
+    <p style="margin-top:0.75rem"><strong>To display all items:</strong></p>
+    <div class="code-block"><span class="kw">set</span> v_con <span class="kw">to</span> <span class="val">0</span>
+<span class="kw">repeat</span> length of Country
+  say (item v_con of Country) for 2 secs
+  change v_con by <span class="val">1</span></div>
+    <div class="highlight purple">The variable <code>v_con</code> acts as the <strong>index</strong> — it steps through each position in the array.</div>
+  </div>
+
+  <div class="card">
+    <h3>3.8 – Problem Analysis with Arrays</h3>
+    <p>Large problems are easier to solve when <strong>broken into smaller steps</strong>. Example: finding the average of 10 numbers.</p>
+    <ol class="steps" style="margin-top:0.75rem">
+      <li><strong>Input</strong> – ask for 10 numbers and store them in array <code>Number</code></li>
+      <li><strong>Total</strong> – loop through the array and sum all values</li>
+      <li><strong>Average</strong> – divide total by 10</li>
+      <li><strong>Output</strong> – display the average</li>
+    </ol>
+  </div>
+
+  <!-- Interactive match -->
+  <div class="card" style="border-color:var(--accent4)">
+    <h3 style="color:var(--accent4)">🎮 Match the Block</h3>
+    <p style="margin-bottom:0.75rem">Click a block on the left, then its description on the right to match them.</p>
+    <div class="match-game" id="match-game">
+      <div class="match-item" data-id="a" data-group="block" onclick="doMatch(this)">add answer to List</div>
+      <div class="match-item" data-id="c" data-group="desc" onclick="doMatch(this)">Appends a new item to the end of the array</div>
+      <div class="match-item" data-id="b" data-group="block" onclick="doMatch(this)">length of List</div>
+      <div class="match-item" data-id="a" data-group="desc" onclick="doMatch(this)">Retrieves the value at a given index</div>
+      <div class="match-item" data-id="c" data-group="block" onclick="doMatch(this)">item (n) of List</div>
+      <div class="match-item" data-id="b" data-group="desc" onclick="doMatch(this)">Returns the total number of items stored</div>
+    </div>
+    <div id="match-result" style="margin-top:0.75rem;color:var(--correct);font-weight:700;display:none">🎉 All matched correctly!</div>
+  </div>
+
+  <div class="divider"></div>
+  <button class="btn-primary" onclick="showSection('s5', document.querySelector('[data-sec=s5]'))">Take the Quiz →</button>
+</div>
+
+<!-- ===== SECTION 5 – QUIZ ===== -->
+<div class="section" id="s5">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(52,211,153,0.15)">✏️</div>
+    <div>
+      <h2>Chapter Quiz</h2>
+      <p>Test your understanding — 20 questions</p>
+      <span id="score-display" class="score-pill">Score: 0 / 0</span>
+    </div>
+  </div>
+
+  <div id="result-banner">
+    <div class="big-score" id="final-score-big"></div>
+    <h2>Quiz Complete! 🎉</h2>
+    <p id="result-msg"></p>
+    <button class="btn-secondary" onclick="resetQuiz()">Try Again</button>
+  </div>
+
+  <!-- Q1 -->
+  <div class="quiz-q" id="q1">
+    <div class="q-text"><span class="q-num">Q1</span> What is a "simple selection" in programming?</div>
+    <div class="options" id="q1-opts">
+      <button class="option-btn" onclick="answerQ('q1',this,false)">A loop that runs a fixed number of times</button>
+      <button class="option-btn" onclick="answerQ('q1',this,true)">A structure with one condition and two possible outcomes</button>
+      <button class="option-btn" onclick="answerQ('q1',this,false)">A list that stores many values</button>
+      <button class="option-btn" onclick="answerQ('q1',this,false)">A loop that never ends</button>
+    </div>
+    <div id="q1-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="quiz-q" id="q2">
+    <div class="q-text"><span class="q-num">Q2</span> In the Snakes and Ladders flowchart, what happens when the player reaches the head of a snake?</div>
+    <div class="options" id="q2-opts">
+      <button class="option-btn" onclick="answerQ('q2',this,false)">The game ends immediately</button>
+      <button class="option-btn" onclick="answerQ('q2',this,false)">The player moves to the top of a ladder</button>
+      <button class="option-btn" onclick="answerQ('q2',this,true)">The counter moves down to where the snake's tail ends</button>
+      <button class="option-btn" onclick="answerQ('q2',this,false)">The player skips two turns</button>
+    </div>
+    <div id="q2-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="quiz-q" id="q3">
+    <div class="q-text"><span class="q-num">Q3</span> Which type of repetition loop is best when you know exactly how many times you need to repeat an action?</div>
+    <div class="options" id="q3-opts">
+      <button class="option-btn" onclick="answerQ('q3',this,false)">An indefinite loop (forever)</button>
+      <button class="option-btn" onclick="answerQ('q3',this,true)">A fixed (count-controlled) loop</button>
+      <button class="option-btn" onclick="answerQ('q3',this,false)">A condition-controlled loop (repeat until)</button>
+      <button class="option-btn" onclick="answerQ('q3',this,false)">A selection structure (if–else)</button>
+    </div>
+    <div id="q3-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q4 Fill-in -->
+  <div class="fill-blank quiz-q" id="q4">
+    <div class="q-text"><span class="q-num">Q4</span> Complete the sentence:</div>
+    <p>A loop placed <em>inside</em> another loop is called a <strong>________</strong> repetition.</p>
+    <input class="blank-input" id="q4-input" placeholder="Type your answer here…" />
+    <button class="check-btn" onclick="checkFill('q4','nested')">Check Answer</button>
+    <div id="q4-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="quiz-q" id="q5">
+    <div class="q-text"><span class="q-num">Q5</span> What is an array?</div>
+    <div class="options" id="q5-opts">
+      <button class="option-btn" onclick="answerQ('q5',this,false)">A type of flowchart symbol</button>
+      <button class="option-btn" onclick="answerQ('q5',this,false)">A Scratch sprite costume</button>
+      <button class="option-btn" onclick="answerQ('q5',this,true)">A data structure that stores many items under a single variable name</button>
+      <button class="option-btn" onclick="answerQ('q5',this,false)">A loop that runs forever</button>
+    </div>
+    <div id="q5-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="quiz-q" id="q6">
+    <div class="q-text"><span class="q-num">Q6</span> What term describes the position number used to access a specific item in an array?</div>
+    <div class="options" id="q6-opts">
+      <button class="option-btn" onclick="answerQ('q6',this,false)">Variable</button>
+      <button class="option-btn" onclick="answerQ('q6',this,true)">Index</button>
+      <button class="option-btn" onclick="answerQ('q6',this,false)">Counter</button>
+      <button class="option-btn" onclick="answerQ('q6',this,false)">Loop</button>
+    </div>
+    <div id="q6-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="quiz-q" id="q7">
+    <div class="q-text"><span class="q-num">Q7</span> In flowcharts, which shape represents a <strong>decision</strong> (condition)?</div>
+    <div class="options" id="q7-opts">
+      <button class="option-btn" onclick="answerQ('q7',this,false)">Rectangle</button>
+      <button class="option-btn" onclick="answerQ('q7',this,false)">Oval / Rounded rectangle</button>
+      <button class="option-btn" onclick="answerQ('q7',this,true)">Diamond</button>
+      <button class="option-btn" onclick="answerQ('q7',this,false)">Parallelogram</button>
+    </div>
+    <div id="q7-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q8 Fill-in -->
+  <div class="fill-blank quiz-q" id="q8">
+    <div class="q-text"><span class="q-num">Q8</span> Complete the sentence:</div>
+    <p>To retrieve the 3rd item from a Scratch list called <em>Country</em>, you use the block: <strong>item (___) of Country</strong></p>
+    <input class="blank-input" id="q8-input" placeholder="Type the number…" />
+    <button class="check-btn" onclick="checkFill('q8','3')">Check Answer</button>
+    <div id="q8-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="quiz-q" id="q9">
+    <div class="q-text"><span class="q-num">Q9</span> Which control structure makes a program choose between different paths based on a condition?</div>
+    <div class="options" id="q9-opts">
+      <button class="option-btn" onclick="answerQ('q9',this,false)">Sequence</button>
+      <button class="option-btn" onclick="answerQ('q9',this,true)">Selection</button>
+      <button class="option-btn" onclick="answerQ('q9',this,false)">Repetition</button>
+      <button class="option-btn" onclick="answerQ('q9',this,false)">Iteration</button>
+    </div>
+    <div id="q9-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="quiz-q" id="q10">
+    <div class="q-text"><span class="q-num">Q10</span> When using a <code>repeat until</code> loop to show numbers 1–5, what condition should you use to stop the loop?</div>
+    <div class="options" id="q10-opts">
+      <button class="option-btn" onclick="answerQ('q10',this,false)">A = 5</button>
+      <button class="option-btn" onclick="answerQ('q10',this,false)">A &lt; 5</button>
+      <button class="option-btn" onclick="answerQ('q10',this,true)">A &gt; 5</button>
+      <button class="option-btn" onclick="answerQ('q10',this,false)">A = 0</button>
+    </div>
+    <div id="q10-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q11 Fill-in -->
+  <div class="fill-blank quiz-q" id="q11">
+    <div class="q-text"><span class="q-num">Q11</span> Complete the sentence:</div>
+    <p>A loop that continues running as long as its condition remains <em>true</em> is called a <strong>condition-________</strong> loop.</p>
+    <input class="blank-input" id="q11-input" placeholder="Type your answer here…" />
+    <button class="check-btn" onclick="checkFill('q11','controlled')">Check Answer</button>
+    <div id="q11-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="quiz-q" id="q12">
+    <div class="q-text"><span class="q-num">Q12</span> In an if–else chain for a grading program with grades A, B, C, D and E, how many conditions are needed?</div>
+    <div class="options" id="q12-opts">
+      <button class="option-btn" onclick="answerQ('q12',this,false)">5</button>
+      <button class="option-btn" onclick="answerQ('q12',this,true)">4</button>
+      <button class="option-btn" onclick="answerQ('q12',this,false)">3</button>
+      <button class="option-btn" onclick="answerQ('q12',this,false)">2</button>
+    </div>
+    <div id="q12-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="quiz-q" id="q13">
+    <div class="q-text"><span class="q-num">Q13</span> Why is using an array better than creating separate variables like <code>marks_1</code>, <code>marks_2</code>, <code>marks_3</code> … for storing student scores?</div>
+    <div class="options" id="q13-opts">
+      <button class="option-btn" onclick="answerQ('q13',this,false)">Arrays are faster to type</button>
+      <button class="option-btn" onclick="answerQ('q13',this,false)">Arrays can only store numbers, which is safer</button>
+      <button class="option-btn" onclick="answerQ('q13',this,true)">Arrays store all values under one name and allow loops to process them efficiently</button>
+      <button class="option-btn" onclick="answerQ('q13',this,false)">Arrays automatically calculate averages</button>
+    </div>
+    <div id="q13-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="quiz-q" id="q14">
+    <div class="q-text"><span class="q-num">Q14</span> An outer loop runs <strong>3 times</strong> and an inner loop runs <strong>4 times</strong>. How many times does the inner loop body execute in total?</div>
+    <div class="options" id="q14-opts">
+      <button class="option-btn" onclick="answerQ('q14',this,false)">7</button>
+      <button class="option-btn" onclick="answerQ('q14',this,false)">4</button>
+      <button class="option-btn" onclick="answerQ('q14',this,true)">12</button>
+      <button class="option-btn" onclick="answerQ('q14',this,false)">3</button>
+    </div>
+    <div id="q14-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q15 Fill-in -->
+  <div class="fill-blank quiz-q" id="q15">
+    <div class="q-text"><span class="q-num">Q15</span> Complete the sentence:</div>
+    <p>In a <code>repeat until</code> or <code>while</code> loop, the loop variable must be <strong>initialised</strong> before the loop and <strong>________</strong> inside it to avoid an infinite loop.</p>
+    <input class="blank-input" id="q15-input" placeholder="Type your answer here…" />
+    <button class="check-btn" onclick="checkFill('q15','updated')">Check Answer</button>
+    <div id="q15-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="quiz-q" id="q16">
+    <div class="q-text"><span class="q-num">Q16</span> In a flowchart, what does a <strong>rectangle</strong> shape represent?</div>
+    <div class="options" id="q16-opts">
+      <button class="option-btn" onclick="answerQ('q16',this,false)">A decision or condition</button>
+      <button class="option-btn" onclick="answerQ('q16',this,false)">The start or end of the program</button>
+      <button class="option-btn" onclick="answerQ('q16',this,true)">A process or action step</button>
+      <button class="option-btn" onclick="answerQ('q16',this,false)">An input or output operation</button>
+    </div>
+    <div id="q16-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q17 -->
+  <div class="quiz-q" id="q17">
+    <div class="q-text"><span class="q-num">Q17</span> Which flowchart shape is used for <strong>Input / Output</strong> operations?</div>
+    <div class="options" id="q17-opts">
+      <button class="option-btn" onclick="answerQ('q17',this,false)">Rectangle</button>
+      <button class="option-btn" onclick="answerQ('q17',this,false)">Diamond</button>
+      <button class="option-btn" onclick="answerQ('q17',this,false)">Oval</button>
+      <button class="option-btn" onclick="answerQ('q17',this,true)">Parallelogram</button>
+    </div>
+    <div id="q17-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="quiz-q" id="q18">
+    <div class="q-text"><span class="q-num">Q18</span> In the problem analysis example for finding the average of 10 numbers, what are the four main steps in the correct order?</div>
+    <div class="options" id="q18-opts">
+      <button class="option-btn" onclick="answerQ('q18',this,false)">Total → Input → Average → Output</button>
+      <button class="option-btn" onclick="answerQ('q18',this,true)">Input → Total → Average → Output</button>
+      <button class="option-btn" onclick="answerQ('q18',this,false)">Input → Average → Total → Output</button>
+      <button class="option-btn" onclick="answerQ('q18',this,false)">Output → Total → Average → Input</button>
+    </div>
+    <div id="q18-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="quiz-q" id="q19">
+    <div class="q-text"><span class="q-num">Q19</span> In a multi-option if–else chain, what happens if <em>none</em> of the conditions are true?</div>
+    <div class="options" id="q19-opts">
+      <button class="option-btn" onclick="answerQ('q19',this,false)">The program crashes</button>
+      <button class="option-btn" onclick="answerQ('q19',this,false)">The first condition is re-checked</button>
+      <button class="option-btn" onclick="answerQ('q19',this,true)">The final else block runs</button>
+      <button class="option-btn" onclick="answerQ('q19',this,false)">All conditions execute at once</button>
+    </div>
+    <div id="q19-fb" class="feedback"></div>
+  </div>
+
+  <!-- Q20 Fill-in -->
+  <div class="fill-blank quiz-q" id="q20">
+    <div class="q-text"><span class="q-num">Q20</span> Complete the sentence:</div>
+    <p>In Scratch, to step through each position in an array, you use a variable called an <strong>________</strong> (e.g., <code>v_con</code>).</p>
+    <input class="blank-input" id="q20-input" placeholder="Type your answer here…" />
+    <button class="check-btn" onclick="checkFill('q20','index')">Check Answer</button>
+    <div id="q20-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" id="finish-btn" onclick="finishQuiz()" style="display:none">See My Results 🏆</button>
+</div>
+
+</main>
+
+<script>
+// ---- Navigation & Progress ----
+const visited = new Set(['s1']);
+const totalSecs = 5;
+
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  tab.classList.add('active');
+  visited.add(id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSecs) * 100);
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = visited.size + ' of ' + totalSecs + ' sections visited';
+  visited.forEach(id => {
+    const tab = document.querySelector('[data-sec="' + id + '"]');
+    if (tab && !tab.classList.contains('active')) tab.classList.add('done');
+  });
+}
+
+// ---- Quick Check (section mini-quizzes) ----
+function quickCheck(id, btn, correct) {
+  const container = document.getElementById(id);
+  container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Correct! Well done.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = '❌ Not quite — review the section above.';
+  }
+}
+
+// ---- Quiz scoring ----
+let score = 0;
+let answered = 0;
+const totalQ = 20;
+
+function answerQ(qid, btn, correct) {
+  const opts = document.getElementById(qid + '-opts');
+  opts.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(qid + '-fb');
+  answered++;
+  if (correct) {
+    score++;
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Correct!';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = '❌ Incorrect. Review the relevant section.';
+    // highlight correct
+    opts.querySelectorAll('.option-btn').forEach(b => {
+      if (!b.classList.contains('wrong')) b.style.opacity = '0.4';
+    });
+  }
+  updateScore();
+  checkShowFinish();
+}
+
+function checkFill(qid, answer) {
+  const input = document.getElementById(qid + '-input');
+  const fb = document.getElementById(qid + '-fb');
+  if (input.disabled) return;
+  input.disabled = true;
+  answered++;
+  if (input.value.trim().toLowerCase() === answer.toLowerCase()) {
+    score++;
+    input.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = '✅ Correct!';
+  } else {
+    input.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = '❌ The answer was: "' + answer + '"';
+  }
+  updateScore();
+  checkShowFinish();
+}
+
+function updateScore() {
+  document.getElementById('score-display').textContent = 'Score: ' + score + ' / ' + answered;
+}
+
+function checkShowFinish() {
+  if (answered >= totalQ) {
+    document.getElementById('finish-btn').style.display = 'inline-block';
+  }
+}
+
+function finishQuiz() {
+  const banner = document.getElementById('result-banner');
+  banner.style.display = 'block';
+  document.getElementById('final-score-big').textContent = score + ' / ' + totalQ;
+  const pct = Math.round((score / totalQ) * 100);
+  let msg;
+  if (pct === 100) msg = '🌟 Perfect score! Outstanding work!';
+  else if (pct >= 75) msg = '👏 Great job! You have a solid grasp of the chapter.';
+  else if (pct >= 50) msg = '👍 Good effort! Revisit a few sections to strengthen your understanding.';
+  else msg = '📚 Keep studying — go back through the sections and try again!';
+  document.getElementById('result-msg').textContent = msg;
+  banner.scrollIntoView({behavior:'smooth'});
+}
+
+function resetQuiz() {
+  score = 0; answered = 0;
+  updateScore();
+  document.getElementById('result-banner').style.display = 'none';
+  document.getElementById('finish-btn').style.display = 'none';
+  // reset all MCQ
+  ['q1','q2','q3','q5','q6','q7','q9','q10','q12','q13','q14','q16','q17','q18','q19'].forEach(qid => {
+    document.getElementById(qid + '-opts').querySelectorAll('.option-btn').forEach(b => {
+      b.disabled = false;
+      b.classList.remove('correct','wrong');
+      b.style.opacity = '';
+    });
+    const fb = document.getElementById(qid + '-fb');
+    fb.className = 'feedback';
+    fb.textContent = '';
+  });
+  // reset fills
+  ['q4','q8','q11','q15','q20'].forEach(qid => {
+    const inp = document.getElementById(qid + '-input');
+    inp.disabled = false;
+    inp.value = '';
+    inp.classList.remove('correct','wrong');
+    const fb = document.getElementById(qid + '-fb');
+    fb.className = 'feedback';
+    fb.textContent = '';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ---- Match game ----
+let firstPick = null;
+let matchedCount = 0;
+const correctPairs = {'a':'a','b':'b','c':'c'};
+
+function doMatch(el) {
+  if (el.classList.contains('matched')) return;
+
+  if (!firstPick) {
+    firstPick = el;
+    el.classList.add('selected');
+    return;
+  }
+
+  if (firstPick === el) { el.classList.remove('selected'); firstPick = null; return; }
+
+  // same group? reset
+  if (firstPick.dataset.group === el.dataset.group) {
+    firstPick.classList.remove('selected');
+    firstPick = el;
+    el.classList.add('selected');
+    return;
+  }
+
+  const blockEl = firstPick.dataset.group === 'block' ? firstPick : el;
+  const descEl  = firstPick.dataset.group === 'desc'  ? firstPick : el;
+
+  if (blockEl.dataset.id === descEl.dataset.id) {
+    blockEl.classList.remove('selected'); blockEl.classList.add('matched');
+    descEl.classList.remove('selected');  descEl.classList.add('matched');
+    matchedCount++;
+    if (matchedCount === 3) document.getElementById('match-result').style.display = 'block';
+  } else {
+    blockEl.classList.add('wrong-match');
+    descEl.classList.add('wrong-match');
+    setTimeout(() => {
+      blockEl.classList.remove('selected','wrong-match');
+      descEl.classList.remove('selected','wrong-match');
+    }, 600);
+  }
+  firstPick = null;
+}
+</script>
+</body>
+</html>
