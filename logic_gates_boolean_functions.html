@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 10 ICT – Chapter 4: Logic Gates with Boolean Functions</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08111f;
+    --surface: #0e1729;
+    --card: #132238;
+    --accent: #22c55e;
+    --accent2: #38bdf8;
+    --accent3: #f97316;
+    --accent4: #a78bfa;
+    --text: #e8eef8;
+    --muted: #94a3b8;
+    --border: #24364f;
+    --correct: #34d399;
+    --wrong: #fb7185;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(34,197,94,0.08), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(56,189,248,0.08), transparent 30%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0e1729 0%, #08111f 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -70px; right: -70px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(34,197,94,0.18), transparent 72%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 980px; margin: 0 auto; position: relative; z-index: 1; }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #03120a;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 5px;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.12;
+  }
+  header p { color: var(--muted); margin-top: 0.55rem; font-size: 1rem; line-height: 1.7; }
+  .progress-bar-wrap { margin-top: 1.2rem; background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+  #global-progress { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; width: 0%; transition: width 0.45s ease; }
+  .progress-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; }
+
+  nav {
+    background: rgba(14,23,41,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab.done { color: var(--correct); }
+
+  main { max-width: 980px; margin: 0 auto; padding: 2rem; }
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  .sec-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+  .sec-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.55rem; flex-shrink: 0; }
+  .sec-header h2 { font-family: 'Syne', sans-serif; font-size: 1.55rem; font-weight: 800; }
+  .sec-header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+  .card {
+    background: rgba(19,34,56,0.92);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card p, .card li { line-height: 1.72; color: var(--text); font-size: 0.95rem; }
+  .card ul, .card ol { padding-left: 1.4rem; margin-top: 0.5rem; }
+  .card li { margin-bottom: 0.35rem; }
+  code { font-family: 'Space Mono', monospace; color: #b7e4ff; font-size: 0.9em; }
+
+  .highlight { background: rgba(34,197,94,0.10); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 0.75rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; line-height: 1.65; }
+  .highlight.teal { background: rgba(56,189,248,0.10); border-color: var(--accent2); }
+  .highlight.orange { background: rgba(249,115,22,0.10); border-color: var(--accent3); }
+  .highlight.purple { background: rgba(167,139,250,0.11); border-color: var(--accent4); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media(max-width:760px) { .two-col, .three-col { grid-template-columns: 1fr; } main { padding: 1.25rem; } nav { padding: 0 1rem; } }
+
+  .concept-chip { display: inline-block; background: rgba(167,139,250,0.12); border: 1px solid var(--accent4); color: var(--accent4); border-radius: 7px; padding: 4px 10px; font-size: 0.8rem; font-weight: 800; margin: 3px 3px 3px 0; }
+  .formula { display: inline-block; background: #091422; border: 1px solid var(--border); color: #a7f3d0; border-radius: 8px; padding: 6px 12px; font-family: 'Space Mono', monospace; font-weight: 700; margin: 4px 0; }
+  .overline { text-decoration: overline; text-decoration-thickness: 2px; }
+
+  .nice-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; overflow: hidden; border-radius: 10px; }
+  .nice-table th { background: var(--accent); color: #03120a; font-family: 'Syne', sans-serif; font-weight: 800; padding: 0.6rem 0.8rem; text-align: left; }
+  .nice-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+  .nice-table tr:last-child td { border-bottom: none; }
+  .nice-table tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+
+  .gate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 1rem; margin-top: 0.75rem; }
+  .gate-card { background: #0b1626; border: 1px solid var(--border); border-radius: 14px; padding: 1rem; }
+  .gate-title { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.6rem; }
+  .gate-title strong { font-family:'Syne', sans-serif; color:#fff; font-size:1rem; }
+  .gate-chip { font-family:'Space Mono', monospace; font-size:0.72rem; color:#03120a; background:var(--accent2); border-radius:99px; padding:3px 9px; font-weight:700; }
+  .gate-svg { display:block; width:100%; height:86px; margin:0.45rem 0 0.6rem; }
+  .gate-svg path, .gate-svg line, .gate-svg circle { stroke:#dbeafe; stroke-width:4; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .gate-svg text { fill:#94a3b8; font-family:'Space Mono', monospace; font-size:13px; font-weight:700; }
+  .truth-mini { width:100%; border-collapse:collapse; font-family:'Space Mono', monospace; font-size:0.78rem; margin-top:0.65rem; }
+  .truth-mini th, .truth-mini td { border:1px solid #24364f; text-align:center; padding:0.35rem; }
+  .truth-mini th { color:#03120a; background:var(--accent2); }
+
+  .signal-diagram { background:#091422; border:1px solid var(--border); border-radius:14px; padding:1.2rem; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.8rem; margin-top:0.75rem; }
+  .sig-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:0.75rem 1rem; min-width:110px; text-align:center; font-family:'Syne', sans-serif; font-weight:800; }
+  .sig-arrow { color:var(--accent2); font-size:1.5rem; font-weight:800; }
+
+  .lab-panel { background:#091422; border:1px solid var(--border); border-radius:15px; padding:1.25rem; margin:0.85rem 0; }
+  .switch-row { display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1rem; }
+  .toggle-btn { background:var(--surface); border:2px solid var(--border); color:var(--text); border-radius:12px; padding:0.7rem 1.1rem; font-family:'Syne', sans-serif; font-weight:800; cursor:pointer; transition:0.18s; }
+  .toggle-btn.on { background:rgba(34,197,94,0.18); border-color:var(--accent); color:var(--accent); }
+  .output-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.65rem; }
+  .output-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:0.85rem; }
+  .output-card span { color:var(--muted); font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.7px; }
+  .output-card strong { display:block; font-family:'Space Mono', monospace; color:#fff; font-size:1.55rem; margin-top:0.1rem; }
+
+  .steps { counter-reset: step; padding-left:0 !important; }
+  .steps li { list-style:none; counter-increment:step; position:relative; padding-left:2.55rem; margin-bottom:0.85rem; line-height:1.65; }
+  .steps li::before { content:counter(step); position:absolute; left:0; top:2px; background:var(--accent); color:#03120a; font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+  .quiz-q { background: rgba(19,34,56,0.95); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .quiz-q .q-text { font-weight: 800; font-size: 1rem; margin-bottom: 1rem; line-height: 1.5; }
+  .q-num { display:inline-block; background:var(--accent); color:#03120a; font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; padding:2px 8px; border-radius:4px; margin-right:0.5rem; }
+  .options { display:flex; flex-direction:column; gap:0.6rem; }
+  .option-btn { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:0.7rem 1rem; color:var(--text); font-family:'Nunito',sans-serif; font-size:0.92rem; cursor:pointer; text-align:left; transition:border-color 0.2s, background 0.2s, transform 0.1s; }
+  .option-btn:hover:not(:disabled) { border-color:var(--accent); background:rgba(34,197,94,0.08); transform:translateX(3px); }
+  .option-btn.correct { border-color:var(--correct); background:rgba(52,211,153,0.12); color:var(--correct); }
+  .option-btn.wrong { border-color:var(--wrong); background:rgba(251,113,133,0.12); color:var(--wrong); }
+  .option-btn:disabled { cursor:default; transform:none; }
+  .feedback { margin-top:0.75rem; padding:0.6rem 1rem; border-radius:8px; font-size:0.88rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:rgba(52,211,153,0.12); color:var(--correct); border:1px solid var(--correct); }
+  .feedback.bad { background:rgba(251,113,133,0.12); color:var(--wrong); border:1px solid var(--wrong); }
+  .blank-input { background:var(--surface); border:2px solid var(--border); border-radius:8px; padding:0.55rem 0.9rem; color:var(--text); font-family:'Space Mono',monospace; font-size:0.88rem; width:100%; outline:none; transition:border-color 0.2s; }
+  .blank-input:focus { border-color:var(--accent2); }
+  .blank-input.correct { border-color:var(--correct); }
+  .blank-input.wrong { border-color:var(--wrong); }
+  .check-btn { margin-top:0.75rem; background:var(--accent2); color:#03120a; border:none; border-radius:8px; padding:0.55rem 1.35rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; cursor:pointer; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),#16a34a); color:#03120a; border:none; border-radius:10px; padding:0.75rem 2rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; box-shadow:0 4px 14px rgba(34,197,94,0.25); display:inline-block; margin-top:1rem; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,197,94,0.35); }
+  .btn-secondary { background:transparent; border:2px solid var(--accent2); color:var(--accent2); border-radius:10px; padding:0.65rem 1.5rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; cursor:pointer; margin-top:1rem; }
+  .score-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid var(--correct); border-radius:99px; padding:4px 14px; color:var(--correct); font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; margin-left:0.75rem; }
+  #result-banner { display:none; background:linear-gradient(135deg,#12351f,#08111f); border:2px solid var(--correct); border-radius:16px; padding:2rem; text-align:center; margin-bottom:2rem; }
+  #result-banner h2 { font-family:'Syne',sans-serif; font-size:1.6rem; color:var(--correct); }
+  #result-banner p { color:var(--muted); margin-top:0.5rem; }
+  #result-banner .big-score { font-size:3rem; font-weight:800; color:var(--accent); font-family:'Syne',sans-serif; }
+  .divider { height:1px; background:var(--border); margin:1.75rem 0; }
+  .match-game { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.75rem; }
+  @media(max-width:600px) { .match-game { grid-template-columns:1fr; } }
+  .match-item { background:var(--surface); border:2px solid var(--border); border-radius:10px; padding:0.65rem 1rem; cursor:pointer; font-size:0.88rem; text-align:center; transition:border-color 0.2s, background 0.2s; user-select:none; }
+  .match-item.selected { border-color:var(--accent); background:rgba(34,197,94,0.10); }
+  .match-item.matched { border-color:var(--correct); background:rgba(52,211,153,0.10); cursor:default; color:var(--correct); }
+  .match-item.wrong-match { border-color:var(--wrong); background:rgba(251,113,133,0.10); animation:shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <span class="chapter-badge">Chapter 4 · Grade 10 ICT</span>
+    <h1>Logic Gates with Boolean Functions</h1>
+    <p>Interactive tutorial covering signals, basic gates, combinational gates, Boolean expressions, integrated circuits, and practical logic-gate applications.</p>
+    <div class="progress-bar-wrap"><div id="global-progress"></div></div>
+    <div class="progress-label" id="progress-label">0 of 7 sections visited</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" data-sec="s1" onclick="showSection('s1',this)">📋 Overview</div>
+  <div class="nav-tab" data-sec="s2" onclick="showSection('s2',this)">🚦 Signals</div>
+  <div class="nav-tab" data-sec="s3" onclick="showSection('s3',this)">🔌 Basic Gates</div>
+  <div class="nav-tab" data-sec="s4" onclick="showSection('s4',this)">🧩 NAND/NOR</div>
+  <div class="nav-tab" data-sec="s5" onclick="showSection('s5',this)">🧠 Circuits</div>
+  <div class="nav-tab" data-sec="s6" onclick="showSection('s6',this)">💾 ICs & Uses</div>
+  <div class="nav-tab" data-sec="s7" onclick="showSection('s7',this)">✏️ Quiz</div>
+</nav>
+
+<main>
+<!-- SECTION 1 -->
+<div class="section active" id="s1">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(34,197,94,0.15)">📋</div>
+    <div><h2>What You'll Learn</h2><p>A clear roadmap for Chapter 4</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Chapter Topics</h3>
+    <ul>
+      <li>How computers use <strong>binary signals</strong> to make decisions</li>
+      <li>The purpose of <strong>logic circuits</strong> and <strong>logic gates</strong></li>
+      <li>Basic logic gates: <strong>AND</strong>, <strong>OR</strong>, and <strong>NOT</strong></li>
+      <li>Combinational logic gates: <strong>NOR</strong> and <strong>NAND</strong></li>
+      <li>How to represent gate behaviour using <strong>truth tables</strong></li>
+      <li>How to design circuits from <strong>Boolean expressions</strong></li>
+      <li>How logic gates are used in <strong>integrated circuits</strong> and real systems</li>
+    </ul>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🔑 Key Terms</h3>
+      <span class="concept-chip">Signal</span>
+      <span class="concept-chip">Binary</span>
+      <span class="concept-chip">Logic Gate</span>
+      <span class="concept-chip">Truth Table</span>
+      <span class="concept-chip">Boolean Expression</span>
+      <span class="concept-chip">Integrated Circuit</span>
+      <span class="concept-chip">Sensor</span>
+    </div>
+    <div class="card">
+      <h3>🧭 Main Idea</h3>
+      <p>A logic gate is a small digital circuit that accepts one or more binary inputs and gives one binary output.</p>
+      <div class="highlight teal">Binary values are normally written as <strong>0</strong> and <strong>1</strong>. In examples, 0 can mean OFF/closed/no, while 1 can mean ON/open/yes depending on the system.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Gate Families</h3>
+    <table class="nice-table">
+      <thead><tr><th>Family</th><th>Gates</th><th>Built From</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Basic Logic Gates</strong></td><td>AND, OR, NOT</td><td>Fundamental gate operations</td></tr>
+        <tr><td><strong>Combinational Logic Gates</strong></td><td>NOR, NAND</td><td>Combinations of basic gates</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s2', document.querySelector('[data-sec=s2]'))">Start Learning →</button>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(56,189,248,0.15)">🚦</div>
+    <div><h2>Signals and Logic Gates</h2><p>Sections 4.1 and 4.2</p></div>
+  </div>
+
+  <div class="card">
+    <h3>4.1 – Signals in Everyday Decisions</h3>
+    <p>Humans use signals to decide what to do. A green signal may mean “go”, a red signal may mean “stop”, and a car warning signal can tell the driver that a door is not closed.</p>
+    <div class="highlight">Computers also make decisions using signals. In digital electronics, these signals are represented using binary values: <strong>0</strong> and <strong>1</strong>.</div>
+  </div>
+
+  <div class="card">
+    <h3>4.2 – What is a Logic Gate?</h3>
+    <p>A <strong>logic circuit</strong> is a circuit designed to build a logical condition using binary values. A <strong>logic gate</strong> is the basic building block of a logic circuit.</p>
+    <p style="margin-top:0.5rem">The Central Processing Unit contains a very large number of logic gates. Each gate receives input values and produces an output value.</p>
+    <div class="signal-diagram">
+      <div class="sig-box">Input A<br><code>0 or 1</code></div>
+      <div class="sig-box">Input B<br><code>0 or 1</code></div>
+      <div class="sig-arrow">→</div>
+      <div class="sig-box" style="border-color:var(--accent)">Logic Gate</div>
+      <div class="sig-arrow">→</div>
+      <div class="sig-box">Output Q<br><code>0 or 1</code></div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2)">
+    <h3 style="color:var(--accent2)">✍️ Quick Check</h3>
+    <p>What type of value does a digital logic gate normally use?</p>
+    <div id="qc1" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Only decimal numbers from 1 to 100</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,true)">Binary values such as 0 and 1</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Only words such as yes and no</button>
+    </div>
+    <div id="qc1-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s3', document.querySelector('[data-sec=s3]'))">Next: Basic Gates →</button>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(34,197,94,0.15)">🔌</div>
+    <div><h2>Basic Logic Gates</h2><p>Sections 4.3.1 – 4.3.3</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Three Basic Gates</h3>
+    <p>The three basic logic gates are <strong>AND</strong>, <strong>OR</strong>, and <strong>NOT</strong>. Each one follows a different rule.</p>
+    <div class="gate-grid">
+      <div class="gate-card">
+        <div class="gate-title"><strong>AND Gate</strong><span class="gate-chip">Q = A.B</span></div>
+        <svg class="gate-svg" viewBox="0 0 220 92" aria-label="AND gate diagram">
+          <line x1="12" y1="30" x2="60" y2="30"/><line x1="12" y1="62" x2="60" y2="62"/>
+          <path d="M60 16 L105 16 A30 30 0 0 1 105 76 L60 76 Z"/>
+          <line x1="135" y1="46" x2="205" y2="46"/>
+          <text x="15" y="24">A</text><text x="15" y="78">B</text><text x="190" y="38">Q</text>
+        </svg>
+        <p>Output is 1 only when <strong>both</strong> inputs are 1.</p>
+        <table class="truth-mini"><tr><th>A</th><th>B</th><th>Q</th></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table>
+      </div>
+      <div class="gate-card">
+        <div class="gate-title"><strong>OR Gate</strong><span class="gate-chip">Q = A+B</span></div>
+        <svg class="gate-svg" viewBox="0 0 220 92" aria-label="OR gate diagram">
+          <line x1="12" y1="30" x2="64" y2="30"/><line x1="12" y1="62" x2="64" y2="62"/>
+          <path d="M55 15 C80 27 80 65 55 77 C95 77 122 63 140 46 C122 29 95 15 55 15 Z"/>
+          <line x1="140" y1="46" x2="205" y2="46"/>
+          <text x="15" y="24">A</text><text x="15" y="78">B</text><text x="190" y="38">Q</text>
+        </svg>
+        <p>Output is 1 when <strong>at least one</strong> input is 1.</p>
+        <table class="truth-mini"><tr><th>A</th><th>B</th><th>Q</th></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table>
+      </div>
+      <div class="gate-card">
+        <div class="gate-title"><strong>NOT Gate</strong><span class="gate-chip">Q = <span class="overline">A</span></span></div>
+        <svg class="gate-svg" viewBox="0 0 220 92" aria-label="NOT gate diagram">
+          <line x1="15" y1="46" x2="62" y2="46"/>
+          <path d="M62 18 L62 74 L130 46 Z"/>
+          <circle cx="140" cy="46" r="9"/>
+          <line x1="149" y1="46" x2="205" y2="46"/>
+          <text x="18" y="38">A</text><text x="190" y="38">Q</text>
+        </svg>
+        <p>Output is the <strong>opposite</strong> of the input.</p>
+        <table class="truth-mini"><tr><th>A</th><th>Q</th></tr><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Live Gate Lab</h3>
+    <p>Click the inputs to see how the outputs change.</p>
+    <div class="lab-panel">
+      <div class="switch-row">
+        <button class="toggle-btn" id="btnA" onclick="toggleInput('A')">A = 0</button>
+        <button class="toggle-btn" id="btnB" onclick="toggleInput('B')">B = 0</button>
+      </div>
+      <div class="output-grid">
+        <div class="output-card"><span>AND · A.B</span><strong id="outAND">0</strong></div>
+        <div class="output-card"><span>OR · A+B</span><strong id="outOR">0</strong></div>
+        <div class="output-card"><span>NOT A</span><strong id="outNOTA">1</strong></div>
+        <div class="output-card"><span>NOT B</span><strong id="outNOTB">1</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent)">
+    <h3>✍️ Quick Check</h3>
+    <p>If A = 1 and B = 0, what is the output of <code>A.B</code>?</p>
+    <div id="qc2" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc2',this,true)">0</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">1</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">2</button>
+    </div>
+    <div id="qc2-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s4', document.querySelector('[data-sec=s4]'))">Next: NAND and NOR →</button>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(167,139,250,0.15)">🧩</div>
+    <div><h2>Combinational Logic Gates</h2><p>Sections 4.4.1 and 4.4.2</p></div>
+  </div>
+
+  <div class="card">
+    <h3>What is a Combinational Gate?</h3>
+    <p>A combinational logic gate can be built by combining basic gates. In this chapter, the important combinational gates are <strong>NOR</strong> and <strong>NAND</strong>.</p>
+    <div class="highlight purple">NOR means <strong>NOT OR</strong>. NAND means <strong>NOT AND</strong>.</div>
+  </div>
+
+  <div class="gate-grid">
+    <div class="gate-card">
+      <div class="gate-title"><strong>NOR Gate</strong><span class="gate-chip">Q = <span class="overline">A+B</span></span></div>
+      <svg class="gate-svg" viewBox="0 0 220 92" aria-label="NOR gate diagram">
+        <line x1="12" y1="30" x2="64" y2="30"/><line x1="12" y1="62" x2="64" y2="62"/>
+        <path d="M55 15 C80 27 80 65 55 77 C95 77 122 63 140 46 C122 29 95 15 55 15 Z"/>
+        <circle cx="151" cy="46" r="9"/>
+        <line x1="160" y1="46" x2="205" y2="46"/>
+        <text x="15" y="24">A</text><text x="15" y="78">B</text><text x="190" y="38">Q</text>
+      </svg>
+      <p>NOR gives 1 only when <strong>both inputs are 0</strong>.</p>
+      <table class="truth-mini"><tr><th>A</th><th>B</th><th>Q</th></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table>
+    </div>
+    <div class="gate-card">
+      <div class="gate-title"><strong>NAND Gate</strong><span class="gate-chip">Q = <span class="overline">A.B</span></span></div>
+      <svg class="gate-svg" viewBox="0 0 220 92" aria-label="NAND gate diagram">
+        <line x1="12" y1="30" x2="60" y2="30"/><line x1="12" y1="62" x2="60" y2="62"/>
+        <path d="M60 16 L105 16 A30 30 0 0 1 105 76 L60 76 Z"/>
+        <circle cx="145" cy="46" r="9"/>
+        <line x1="154" y1="46" x2="205" y2="46"/>
+        <text x="15" y="24">A</text><text x="15" y="78">B</text><text x="190" y="38">Q</text>
+      </svg>
+      <p>NAND gives 0 only when <strong>both inputs are 1</strong>.</p>
+      <table class="truth-mini"><tr><th>A</th><th>B</th><th>Q</th></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Match the Gate</h3>
+    <p>Click a gate name, then click its correct rule.</p>
+    <div class="match-game" id="match-game">
+      <div class="match-item" data-id="and" data-group="gate" onclick="doMatch(this)">AND</div>
+      <div class="match-item" data-id="nor" data-group="rule" onclick="doMatch(this)">1 only when all inputs are 0</div>
+      <div class="match-item" data-id="or" data-group="gate" onclick="doMatch(this)">OR</div>
+      <div class="match-item" data-id="nand" data-group="rule" onclick="doMatch(this)">0 only when all inputs are 1</div>
+      <div class="match-item" data-id="not" data-group="gate" onclick="doMatch(this)">NOT</div>
+      <div class="match-item" data-id="and" data-group="rule" onclick="doMatch(this)">1 only when all inputs are 1</div>
+      <div class="match-item" data-id="nand" data-group="gate" onclick="doMatch(this)">NAND</div>
+      <div class="match-item" data-id="or" data-group="rule" onclick="doMatch(this)">1 when at least one input is 1</div>
+      <div class="match-item" data-id="nor" data-group="gate" onclick="doMatch(this)">NOR</div>
+      <div class="match-item" data-id="not" data-group="rule" onclick="doMatch(this)">Returns the complement of input</div>
+    </div>
+    <div id="match-result" style="margin-top:0.75rem;color:var(--correct);font-weight:800;display:none">All matched correctly.</div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s5', document.querySelector('[data-sec=s5]'))">Next: Boolean Circuits →</button>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(249,115,22,0.15)">🧠</div>
+    <div><h2>Boolean Expressions and Circuit Design</h2><p>Section 4.5</p></div>
+  </div>
+
+  <div class="card">
+    <h3>Boolean Notation</h3>
+    <table class="nice-table">
+      <thead><tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>.</code></td><td>AND</td><td><code>A.B</code></td></tr>
+        <tr><td><code>+</code></td><td>OR</td><td><code>A+B</code></td></tr>
+        <tr><td><span class="overline">A</span></td><td>NOT / complement</td><td><code>NOT A</code></td></tr>
+        <tr><td><code>( )</code></td><td>Group an operation</td><td><code>A.(A+B)</code></td></tr>
+      </tbody>
+    </table>
+    <div class="highlight orange">In Boolean algebra, <code>+</code> means OR. It is not normal mathematical addition.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>3-Input Truth Tables</h3>
+      <p>A gate with <strong>n inputs</strong> has <strong>2<sup>n</sup></strong> possible input combinations.</p>
+      <div class="formula">3 inputs → 2³ = 8 rows</div>
+      <p style="margin-top:0.6rem">Example: <code>Q = A.B.C</code> is 1 only when A, B, and C are all 1.</p>
+    </div>
+    <div class="card">
+      <h3>Designing a Circuit from an Expression</h3>
+      <p>Break the expression into smaller parts and build each part with a gate.</p>
+      <ol class="steps">
+        <li>Identify the inputs: <code>A</code> and <code>B</code></li>
+        <li>Create <code>A+B</code> using an OR gate</li>
+        <li>Create <code>A.(A+B)</code> using an AND gate</li>
+        <li>Create final <code>Q=A.(A+B)+B</code> using an OR gate</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Expression Calculator</h3>
+    <p>Try the expression <span class="formula">Q = A.(A+B)+B</span></p>
+    <div class="lab-panel">
+      <div class="switch-row">
+        <button class="toggle-btn" id="exprBtnA" onclick="toggleExpr('A')">A = 0</button>
+        <button class="toggle-btn" id="exprBtnB" onclick="toggleExpr('B')">B = 0</button>
+      </div>
+      <div class="output-grid">
+        <div class="output-card"><span>A+B</span><strong id="exprOR">0</strong></div>
+        <div class="output-card"><span>A.(A+B)</span><strong id="exprAND">0</strong></div>
+        <div class="output-card"><span>Q</span><strong id="exprQ">0</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s6', document.querySelector('[data-sec=s6]'))">Next: ICs and Uses →</button>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(56,189,248,0.15)">💾</div>
+    <div><h2>Integrated Circuits and Practical Usage</h2><p>Sections 4.6 and 4.7</p></div>
+  </div>
+
+  <div class="card">
+    <h3>4.6 – Integrated Circuits</h3>
+    <p>An <strong>Integrated Circuit</strong>, or <strong>IC</strong>, is a small packaged circuit made for a specific function. ICs can contain devices such as transistors, resistors, capacitors, and diodes.</p>
+    <div class="highlight teal">Logic gates can be placed inside ICs. A microprocessor is made from many integrated circuits and logic-gate based circuits.</div>
+    <table class="nice-table">
+      <thead><tr><th>Part</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td>Input pins</td><td>Receive signals such as A and B</td></tr>
+        <tr><td>Logic gates inside the IC</td><td>Process input signals</td></tr>
+        <tr><td>Output pins</td><td>Send the final output signal Q</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🏠 Home Alarm System</h3>
+      <p>A house alarm can use OR logic. If any window or door sensor becomes 1, the alarm output becomes 1.</p>
+      <div class="formula">Alarm = W1 + W2 + FrontDoor + BackDoor</div>
+      <div class="highlight">All sensors 0 → no alarm. Any sensor 1 → alarm on.</div>
+    </div>
+    <div class="card">
+      <h3>💡 Street Light Control</h3>
+      <p>A street lamp can use a manual switch, a timer, and a light sensor. One simple logic rule is:</p>
+      <div class="formula">Lamp = Manual + Timer.Dark</div>
+      <p style="margin-top:0.7rem">This means the lamp turns on manually, or automatically when the timer is active and the environment is dark.</p>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2)">
+    <h3 style="color:var(--accent2)">✍️ Quick Check</h3>
+    <p>Why is OR logic suitable for a home alarm system?</p>
+    <div id="qc3" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc3',this,true)">Because the alarm should turn on when any one sensor is active.</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">Because the alarm should turn on only when all sensors are active.</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">Because OR gates always output 0.</button>
+    </div>
+    <div id="qc3-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s7', document.querySelector('[data-sec=s7]'))">Next: Quiz →</button>
+</div>
+
+<!-- SECTION 7 QUIZ -->
+<div class="section" id="s7">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(34,197,94,0.15)">✏️</div>
+    <div><h2>Chapter Quiz</h2><p>20 questions · instant feedback <span class="score-pill">Score: <span id="score-now">0</span>/20</span></p></div>
+  </div>
+
+  <div id="result-banner">
+    <h2>Quiz Complete</h2>
+    <div class="big-score"><span id="final-score">0</span>/20</div>
+    <p id="final-msg">Review the chapter and try again.</p>
+    <button class="btn-secondary" onclick="resetQuiz()">Reset Quiz</button>
+  </div>
+
+  <div class="quiz-q" id="q1"><div class="q-text"><span class="q-num">Q1</span> Digital logic normally uses which values?</div><div class="options" id="q1-opts"><button class="option-btn" onclick="answerQ('q1',this,false)">2 and 3</button><button class="option-btn" data-correct="true" onclick="answerQ('q1',this,true)">0 and 1</button><button class="option-btn" onclick="answerQ('q1',this,false)">10 and 20</button></div><div id="q1-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q2"><div class="q-text"><span class="q-num">Q2</span> What does a logic gate do?</div><div class="options" id="q2-opts"><button class="option-btn" onclick="answerQ('q2',this,false)">Stores only pictures</button><button class="option-btn" data-correct="true" onclick="answerQ('q2',this,true)">Produces an output from one or more inputs</button><button class="option-btn" onclick="answerQ('q2',this,false)">Changes text into images</button></div><div id="q2-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q3"><div class="q-text"><span class="q-num">Q3</span> Which set contains only basic logic gates?</div><div class="options" id="q3-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q3',this,true)">AND, OR, NOT</button><button class="option-btn" onclick="answerQ('q3',this,false)">NAND, NOR, Printer</button><button class="option-btn" onclick="answerQ('q3',this,false)">CPU, RAM, ROM</button></div><div id="q3-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q4"><div class="q-text"><span class="q-num">Q4</span> AND gate output is 1 when:</div><div class="options" id="q4-opts"><button class="option-btn" onclick="answerQ('q4',this,false)">At least one input is 1</button><button class="option-btn" data-correct="true" onclick="answerQ('q4',this,true)">All inputs are 1</button><button class="option-btn" onclick="answerQ('q4',this,false)">All inputs are 0</button></div><div id="q4-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q5"><div class="q-text"><span class="q-num">Q5</span> The Boolean expression for A AND B is:</div><div class="options" id="q5-opts"><button class="option-btn" onclick="answerQ('q5',this,false)">A+B</button><button class="option-btn" data-correct="true" onclick="answerQ('q5',this,true)">A.B</button><button class="option-btn" onclick="answerQ('q5',this,false)">A/B</button></div><div id="q5-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q6"><div class="q-text"><span class="q-num">Q6</span> OR gate output is 1 when:</div><div class="options" id="q6-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q6',this,true)">At least one input is 1</button><button class="option-btn" onclick="answerQ('q6',this,false)">Only both inputs are 0</button><button class="option-btn" onclick="answerQ('q6',this,false)">The input is inverted</button></div><div id="q6-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q7"><div class="q-text"><span class="q-num">Q7</span> In Boolean algebra, A+B means:</div><div class="options" id="q7-opts"><button class="option-btn" onclick="answerQ('q7',this,false)">A divided by B</button><button class="option-btn" onclick="answerQ('q7',this,false)">Normal number addition only</button><button class="option-btn" data-correct="true" onclick="answerQ('q7',this,true)">A OR B</button></div><div id="q7-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q8"><div class="q-text"><span class="q-num">Q8</span> NOT gate gives:</div><div class="options" id="q8-opts"><button class="option-btn" onclick="answerQ('q8',this,false)">The same input as output</button><button class="option-btn" data-correct="true" onclick="answerQ('q8',this,true)">The complement of the input</button><button class="option-btn" onclick="answerQ('q8',this,false)">Always 1</button></div><div id="q8-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q9"><div class="q-text"><span class="q-num">Q9</span> How many rows are in a 2-input truth table?</div><div class="options" id="q9-opts"><button class="option-btn" onclick="answerQ('q9',this,false)">2</button><button class="option-btn" data-correct="true" onclick="answerQ('q9',this,true)">4</button><button class="option-btn" onclick="answerQ('q9',this,false)">8</button></div><div id="q9-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q10"><div class="q-text"><span class="q-num">Q10</span> How many rows are in a 3-input truth table?</div><div class="options" id="q10-opts"><button class="option-btn" onclick="answerQ('q10',this,false)">4</button><button class="option-btn" data-correct="true" onclick="answerQ('q10',this,true)">8</button><button class="option-btn" onclick="answerQ('q10',this,false)">16</button></div><div id="q10-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q11"><div class="q-text"><span class="q-num">Q11</span> NOR means:</div><div class="options" id="q11-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q11',this,true)">NOT OR</button><button class="option-btn" onclick="answerQ('q11',this,false)">NOT AND</button><button class="option-btn" onclick="answerQ('q11',this,false)">AND OR</button></div><div id="q11-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q12"><div class="q-text"><span class="q-num">Q12</span> NOR gate output is 1 when:</div><div class="options" id="q12-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q12',this,true)">Both inputs are 0</button><button class="option-btn" onclick="answerQ('q12',this,false)">Both inputs are 1</button><button class="option-btn" onclick="answerQ('q12',this,false)">Only A is 1</button></div><div id="q12-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q13"><div class="q-text"><span class="q-num">Q13</span> NAND means:</div><div class="options" id="q13-opts"><button class="option-btn" onclick="answerQ('q13',this,false)">NOT OR</button><button class="option-btn" data-correct="true" onclick="answerQ('q13',this,true)">NOT AND</button><button class="option-btn" onclick="answerQ('q13',this,false)">Only OR</button></div><div id="q13-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q14"><div class="q-text"><span class="q-num">Q14</span> NAND gate output is 0 when:</div><div class="options" id="q14-opts"><button class="option-btn" onclick="answerQ('q14',this,false)">Both inputs are 0</button><button class="option-btn" onclick="answerQ('q14',this,false)">Only one input is 1</button><button class="option-btn" data-correct="true" onclick="answerQ('q14',this,true)">Both inputs are 1</button></div><div id="q14-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q15"><div class="q-text"><span class="q-num">Q15</span> Combinational logic circuits are designed using:</div><div class="options" id="q15-opts"><button class="option-btn" onclick="answerQ('q15',this,false)">Only storage devices</button><button class="option-btn" data-correct="true" onclick="answerQ('q15',this,true)">Basic logic gates</button><button class="option-btn" onclick="answerQ('q15',this,false)">Only monitors</button></div><div id="q15-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q16"><div class="q-text"><span class="q-num">Q16</span> In Q=A.(A+B)+B, which part can be built first using an OR gate?</div><div class="options" id="q16-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q16',this,true)">A+B</button><button class="option-btn" onclick="answerQ('q16',this,false)">A.B only</button><button class="option-btn" onclick="answerQ('q16',this,false)">NOT A</button></div><div id="q16-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q17"><div class="q-text"><span class="q-num">Q17</span> IC stands for:</div><div class="options" id="q17-opts"><button class="option-btn" onclick="answerQ('q17',this,false)">Input Cable</button><button class="option-btn" data-correct="true" onclick="answerQ('q17',this,true)">Integrated Circuit</button><button class="option-btn" onclick="answerQ('q17',this,false)">Internal Computer</button></div><div id="q17-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q18"><div class="q-text"><span class="q-num">Q18</span> A home alarm with several door/window sensors commonly uses OR logic because:</div><div class="options" id="q18-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q18',this,true)">Any active sensor should turn on the alarm</button><button class="option-btn" onclick="answerQ('q18',this,false)">Every sensor must be active together</button><button class="option-btn" onclick="answerQ('q18',this,false)">The alarm should never turn on</button></div><div id="q18-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q19"><div class="q-text"><span class="q-num">Q19</span> Complete the sentence:</div><p>A table that lists all possible inputs and their outputs is called a <strong>________</strong>.</p><input class="blank-input" id="q19-input" placeholder="Type your answer here…"/><button class="check-btn" onclick="checkFill('q19','truth table|truth tables')">Check Answer</button><div id="q19-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q20"><div class="q-text"><span class="q-num">Q20</span> Complete the sentence:</div><p>The small circle at the output of NAND, NOR, and NOT symbols represents <strong>________</strong>.</p><input class="blank-input" id="q20-input" placeholder="Type your answer here…"/><button class="check-btn" onclick="checkFill('q20','not|negation|inversion|complement')">Check Answer</button><div id="q20-fb" class="feedback"></div></div>
+
+  <button class="btn-primary" id="finish-btn" onclick="finishQuiz()" style="display:none">See My Results</button>
+</div>
+</main>
+
+<script>
+// Navigation and progress
+const visited = new Set(['s1']);
+const totalSecs = 7;
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (tab) tab.classList.add('active');
+  visited.add(id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSecs) * 100);
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = visited.size + ' of ' + totalSecs + ' sections visited';
+  visited.forEach(id => {
+    const tab = document.querySelector('[data-sec="' + id + '"]');
+    if (tab && !tab.classList.contains('active')) tab.classList.add('done');
+  });
+}
+updateProgress();
+
+// Quick checks
+function quickCheck(id, btn, correct) {
+  const container = document.getElementById(id);
+  container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not quite. Review the explanation above.';
+  }
+}
+
+// Gate lab
+const lab = {A:0, B:0};
+function toggleInput(k) {
+  lab[k] = lab[k] ? 0 : 1;
+  updateGateLab();
+}
+function updateGateLab() {
+  ['A','B'].forEach(k => {
+    const btn = document.getElementById('btn' + k);
+    btn.textContent = k + ' = ' + lab[k];
+    btn.classList.toggle('on', lab[k] === 1);
+  });
+  document.getElementById('outAND').textContent = lab.A && lab.B ? 1 : 0;
+  document.getElementById('outOR').textContent = lab.A || lab.B ? 1 : 0;
+  document.getElementById('outNOTA').textContent = lab.A ? 0 : 1;
+  document.getElementById('outNOTB').textContent = lab.B ? 0 : 1;
+}
+updateGateLab();
+
+// Expression calculator
+const expr = {A:0, B:0};
+function toggleExpr(k) {
+  expr[k] = expr[k] ? 0 : 1;
+  updateExprLab();
+}
+function updateExprLab() {
+  ['A','B'].forEach(k => {
+    const btn = document.getElementById('exprBtn' + k);
+    btn.textContent = k + ' = ' + expr[k];
+    btn.classList.toggle('on', expr[k] === 1);
+  });
+  const orVal = expr.A || expr.B ? 1 : 0;
+  const andVal = expr.A && orVal ? 1 : 0;
+  const qVal = andVal || expr.B ? 1 : 0;
+  document.getElementById('exprOR').textContent = orVal;
+  document.getElementById('exprAND').textContent = andVal;
+  document.getElementById('exprQ').textContent = qVal;
+}
+updateExprLab();
+
+// Match game
+let selectedMatch = null;
+let matchedCount = 0;
+function doMatch(el) {
+  if (el.classList.contains('matched')) return;
+  if (!selectedMatch) {
+    selectedMatch = el;
+    el.classList.add('selected');
+    return;
+  }
+  if (selectedMatch === el) {
+    selectedMatch.classList.remove('selected');
+    selectedMatch = null;
+    return;
+  }
+  const sameGroup = selectedMatch.dataset.group === el.dataset.group;
+  const sameId = selectedMatch.dataset.id === el.dataset.id;
+  if (!sameGroup && sameId) {
+    selectedMatch.classList.remove('selected');
+    selectedMatch.classList.add('matched');
+    el.classList.add('matched');
+    matchedCount += 1;
+    selectedMatch = null;
+    if (matchedCount === 5) document.getElementById('match-result').style.display = 'block';
+  } else {
+    el.classList.add('wrong-match');
+    selectedMatch.classList.add('wrong-match');
+    setTimeout(() => {
+      el.classList.remove('wrong-match');
+      if (selectedMatch) selectedMatch.classList.remove('wrong-match','selected');
+      selectedMatch = null;
+    }, 450);
+  }
+}
+
+// Quiz scoring
+let score = 0;
+let answered = 0;
+const totalQ = 20;
+function answerQ(qid, btn, correct) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  box.dataset.answered = 'true';
+  const opts = document.getElementById(qid + '-opts');
+  opts.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+  });
+  const fb = document.getElementById(qid + '-fb');
+  answered++;
+  if (correct) {
+    score++;
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+  }
+  updateScore();
+  checkShowFinish();
+}
+function checkFill(qid, answersStr) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  const input = document.getElementById(qid + '-input');
+  const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const answers = answersStr.split('|').map(a => a.trim().toLowerCase());
+  const fb = document.getElementById(qid + '-fb');
+  box.dataset.answered = 'true';
+  answered++;
+  if (answers.includes(val)) {
+    score++;
+    input.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    input.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not correct. Accepted answer: ' + answers[0] + '.';
+  }
+  input.disabled = true;
+  updateScore();
+  checkShowFinish();
+}
+function updateScore() { document.getElementById('score-now').textContent = score; }
+function checkShowFinish() { if (answered >= totalQ) document.getElementById('finish-btn').style.display = 'inline-block'; }
+function finishQuiz() {
+  document.getElementById('final-score').textContent = score;
+  let msg = 'Review the chapter and try again.';
+  if (score >= 18) msg = 'Excellent. You have strong control of logic gates.';
+  else if (score >= 14) msg = 'Good work. Revise NAND, NOR, and Boolean expressions.';
+  else if (score >= 10) msg = 'Fair attempt. Revisit the gate rules and truth tables.';
+  document.getElementById('final-msg').textContent = msg;
+  document.getElementById('result-banner').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetQuiz() { location.reload(); }
+</script>
+</body>
+</html>
