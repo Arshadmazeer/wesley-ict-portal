@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electronic Spreadsheets | WesleyICT</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121936;
+      --soft:#1a2347;
+      --text:#eef2ff;
+      --muted:#b8c1ec;
+      --accent:#7c9cff;
+      --accent2:#55d6be;
+      --border:rgba(255,255,255,0.08);
+      --shadow:0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#09101f 0%, #0d1430 100%);
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .container{
+      width:min(1100px, 92%);
+      margin:0 auto;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      backdrop-filter:blur(12px);
+      background:rgba(8,12,28,0.82);
+      border-bottom:1px solid var(--border);
+    }
+
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 0;
+    }
+
+    .brand{
+      font-size:1.15rem;
+      font-weight:700;
+      letter-spacing:0.4px;
+    }
+
+    .brand span{
+      color:var(--accent);
+    }
+
+    .nav-links{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .nav-links a{
+      color:var(--muted);
+      font-size:0.95rem;
+      transition:0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active{
+      color:var(--text);
+    }
+
+    .hero{
+      padding:70px 0 40px;
+    }
+
+    .eyebrow{
+      color:var(--accent2);
+      text-transform:uppercase;
+      letter-spacing:0.28em;
+      font-size:0.82rem;
+      margin-bottom:16px;
+    }
+
+    .hero h1{
+      font-size:clamp(2rem,4vw,3.4rem);
+      margin-bottom:14px;
+    }
+
+    .hero p{
+      max-width:760px;
+      color:var(--muted);
+      font-size:1.05rem;
+    }
+
+    .progress{
+      margin-top:22px;
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:30px;
+    }
+
+    .tab{
+      padding:10px 16px;
+      background:var(--soft);
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:0.92rem;
+      transition:0.2s;
+    }
+
+    .tab:hover{
+      background:#24305f;
+      color:var(--text);
+    }
+
+    main{
+      padding:10px 0 70px;
+    }
+
+    section{
+      margin:28px 0;
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:28px;
+      box-shadow:var(--shadow);
+    }
+
+    section h2{
+      font-size:1.7rem;
+      margin-bottom:10px;
+    }
+
+    section h3{
+      margin:20px 0 10px;
+      color:#dce4ff;
+      font-size:1.1rem;
+    }
+
+    section p{
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+
+    ul{
+      padding-left:20px;
+      color:var(--muted);
+    }
+
+    li{
+      margin:8px 0;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin-top:18px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:18px;
+    }
+
+    .card h4{
+      margin-bottom:8px;
+      color:var(--text);
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+      margin-top:16px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:700px;
+      background:var(--card);
+      border-radius:16px;
+      overflow:hidden;
+    }
+
+    th, td{
+      border:1px solid var(--border);
+      padding:12px 14px;
+      text-align:left;
+    }
+
+    th{
+      background:#1e295a;
+      color:#ffffff;
+    }
+
+    td{
+      color:var(--muted);
+    }
+
+    .formula{
+      background:#0f1737;
+      border-left:4px solid var(--accent);
+      padding:14px 16px;
+      border-radius:12px;
+      margin:12px 0;
+      color:#dfe6ff;
+      font-family:"Courier New", monospace;
+    }
+
+    .pill-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .pill{
+      padding:9px 14px;
+      background:#16214b;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:#d7e0ff;
+      font-size:0.92rem;
+    }
+
+    .quiz-box{
+      background:linear-gradient(135deg,#182659,#0f7b68);
+      border:none;
+    }
+
+    .quiz-box p{
+      color:#eef8ff;
+    }
+
+    .btn{
+      display:inline-block;
+      margin-top:14px;
+      padding:12px 18px;
+      background:#ffffff;
+      color:#10172f;
+      font-weight:700;
+      border-radius:12px;
+    }
+
+    footer{
+      border-top:1px solid var(--border);
+      padding:28px 0 40px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    @media (max-width:700px){
+      .nav{
+        flex-direction:column;
+        gap:12px;
+        align-items:flex-start;
+      }
+
+      section{
+        padding:20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">Wesley<span>ICT</span></div>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#subjects">Subjects</a>
+        <a href="#" class="active">Spreadsheets</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container hero">
+    <div class="eyebrow">Chapter 2 · Grade 8/9 ICT</div>
+    <h1>Electronic Spreadsheets 📊</h1>
+    <p>
+      Interactive lesson covering spreadsheet basics, worksheets, cells, formulas,
+      functions, formatting, sorting, and charts.
+    </p>
+
+    <div class="progress">0 of 6 sections visited</div>
+
+    <div class="tabs">
+      <a class="tab" href="#overview">📋 Overview</a>
+      <a class="tab" href="#basics">🧾 Basics</a>
+      <a class="tab" href="#tools">🛠 Features</a>
+      <a class="tab" href="#formulas">➕ Formulas</a>
+      <a class="tab" href="#functions">📐 Functions</a>
+      <a class="tab" href="#charts">📈 Charts</a>
+      <a class="tab" href="#quiz">✏️ Quiz</a>
+    </div>
+  </div>
+
+  <main class="container">
+    <section id="overview">
+      <h2>What You'll Learn</h2>
+      <p>A roadmap of the whole chapter.</p>
+
+      <h3>📌 Chapter Topics</h3>
+      <ul>
+        <li>What an electronic spreadsheet is</li>
+        <li>Workbooks, worksheets, rows, columns, and cells</li>
+        <li>Name box and formula bar</li>
+        <li>Entering data and using formulas</li>
+        <li>Basic spreadsheet functions like SUM and AVERAGE</li>
+        <li>Formatting cells and worksheet content</li>
+        <li>Sorting data</li>
+        <li>Creating charts and graphs</li>
+      </ul>
+
+      <h3>🔑 Key Terms</h3>
+      <div class="grid">
+        <div class="card"><h4>Workbook</h4><p>A spreadsheet file containing one or more worksheets.</p></div>
+        <div class="card"><h4>Worksheet</h4><p>A single sheet made of rows and columns.</p></div>
+        <div class="card"><h4>Cell</h4><p>The box formed where a row and column meet.</p></div>
+        <div class="card"><h4>Formula</h4><p>An expression used to calculate values.</p></div>
+        <div class="card"><h4>Function</h4><p>A built-in formula such as SUM or AVERAGE.</p></div>
+        <div class="card"><h4>Chart</h4><p>A graphical way to display spreadsheet data.</p></div>
+      </div>
+    </section>
+
+    <section id="basics">
+      <h2>What is a Spreadsheet?</h2>
+      <p>
+        A spreadsheet is an electronic document used to organize, store, and calculate data
+        in a table made of rows and columns.
+      </p>
+      <p>
+        Data is entered into cells, and spreadsheets can perform calculations, sort data,
+        and create graphs automatically.
+      </p>
+
+      <h3>Main Parts of a Spreadsheet</h3>
+      <div class="pill-list">
+        <div class="pill">Workbook</div>
+        <div class="pill">Worksheet</div>
+        <div class="pill">Row</div>
+        <div class="pill">Column</div>
+        <div class="pill">Cell</div>
+        <div class="pill">Cell Range</div>
+        <div class="pill">Name Box</div>
+        <div class="pill">Formula Bar</div>
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2>Spreadsheet Features</h2>
+      <p>Spreadsheet software includes tools for creating, editing, formatting, and printing data.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Use</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>New</td><td>Create a new workbook</td></tr>
+            <tr><td>Open</td><td>Open an existing file</td></tr>
+            <tr><td>Save</td><td>Save the workbook</td></tr>
+            <tr><td>Print</td><td>Print the worksheet</td></tr>
+            <tr><td>Print Preview</td><td>See how it will look before printing</td></tr>
+            <tr><td>Undo</td><td>Cancel the last action</td></tr>
+            <tr><td>Redo</td><td>Do the undone action again</td></tr>
+            <tr><td>Cut / Copy / Paste</td><td>Move or duplicate data</td></tr>
+            <tr><td>Spelling</td><td>Check spelling and grammar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Formatting Tools</h3>
+      <ul>
+        <li>Font size</li>
+        <li>Bold</li>
+        <li>Italic</li>
+        <li>Underline</li>
+        <li>Text color</li>
+        <li>Fill color</li>
+        <li>Borders</li>
+        <li>Alignment</li>
+        <li>Merge and Center</li>
+        <li>Wrap Text</li>
+      </ul>
+    </section>
+
+    <section id="formulas">
+      <h2>Using Formulas</h2>
+      <p>
+        Formulas are used to calculate values in spreadsheets. Every formula starts with the
+        <strong>=</strong> symbol.
+      </p>
+
+      <h3>Common Operators</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Operation</th>
+              <th>Symbol</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Add</td><td>+</td><td>=C2+D2</td></tr>
+            <tr><td>Subtract</td><td>-</td><td>=E2-F2</td></tr>
+            <tr><td>Multiply</td><td>*</td><td>=I3*J3</td></tr>
+            <tr><td>Divide</td><td>/</td><td>=G3/H3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Examples</h3>
+      <div class="formula">=C2+D2</div>
+      <p>Finds the total of Saturday and Sunday values.</p>
+
+      <div class="formula">=E2-F2</div>
+      <p>Finds the balance after deducting printing cost.</p>
+    </section>
+
+    <section id="functions">
+      <h2>Using Functions</h2>
+      <p>
+        Functions are built-in formulas that help you calculate quickly over a range of cells.
+      </p>
+
+      <div class="grid">
+        <div class="card">
+          <h4>SUM</h4>
+          <p>Adds all numbers in a range.</p>
+          <div class="formula">=SUM(C3:G3)</div>
+        </div>
+
+        <div class="card">
+          <h4>AVERAGE</h4>
+          <p>Finds the average value in a range.</p>
+          <div class="formula">=AVERAGE(C3:G3)</div>
+        </div>
+
+        <div class="card">
+          <h4>MAX</h4>
+          <p>Shows the highest value in a range.</p>
+          <div class="formula">=MAX(C3:C12)</div>
+        </div>
+
+        <div class="card">
+          <h4>MIN</h4>
+          <p>Shows the lowest value in a range.</p>
+          <div class="formula">=MIN(C3:C12)</div>
+        </div>
+
+        <div class="card">
+          <h4>COUNT</h4>
+          <p>Counts cells that contain numbers only.</p>
+          <div class="formula">=COUNT(C3:C12)</div>
+        </div>
+
+        <div class="card">
+          <h4>COUNTA</h4>
+          <p>Counts cells that are not empty.</p>
+          <div class="formula">=COUNTA(C3:C12)</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="charts">
+      <h2>Charts and Graphs</h2>
+      <p>
+        Charts display data visually and make it easier to compare values and understand patterns.
+      </p>
+
+      <h3>Common Chart Types</h3>
+      <div class="pill-list">
+        <div class="pill">Column Chart</div>
+        <div class="pill">Bar Chart</div>
+        <div class="pill">Line Chart</div>
+        <div class="pill">Pie Chart</div>
+        <div class="pill">Area Chart</div>
+        <div class="pill">Scatter Chart</div>
+      </div>
+
+      <h3>Examples from this chapter</h3>
+      <ul>
+        <li>Weekend collection of each child using a column graph</li>
+        <li>Total collection as percentages using a pie chart</li>
+      </ul>
+    </section>
+
+    <section id="quiz" class="quiz-box">
+      <h2>Quiz</h2>
+      <p>
+        Test your understanding of electronic spreadsheets, formulas, functions,
+        formatting, sorting, and charts.
+      </p>
+      <p>20 Questions · Based on this chapter's lesson content</p>
+      <a href="#" class="btn">Start Quiz</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © 2025 Wesley College ICT Department
+    </div>
+  </footer>
+</body>
+</html>
