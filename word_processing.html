@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 8 ICT - Chapter 3: Word Processing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090b1a;
+    --surface: #101329;
+    --card: #161a36;
+    --accent: #6366f1;
+    --accent2: #a78bfa;
+    --accent3: #38bdf8;
+    --accent4: #f59e0b;
+    --text: #eef2ff;
+    --muted: #a5b4fc;
+    --border: #2d315d;
+    --correct: #34d399;
+    --wrong: #fb7185;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(99,102,241,0.12), transparent 30%),
+      radial-gradient(circle at bottom left, rgba(167,139,250,0.10), transparent 28%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(99,102,241,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, #101329 0%, #090b1a 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(99,102,241,0.22), transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 1040px; margin: 0 auto; position: relative; z-index: 1; }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    color: var(--muted); text-decoration: none; font-weight: 800;
+    font-family: 'Syne', sans-serif; font-size: 0.78rem; margin-bottom: 1rem;
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .back-link:hover { color: #fff; }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #070817;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.9rem, 4vw, 3.1rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.12;
+  }
+  header p { color: var(--muted); margin-top: 0.55rem; font-size: 1rem; line-height: 1.75; max-width: 760px; }
+  .progress-bar-wrap { margin-top: 1.2rem; background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+  #global-progress { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; width: 0%; transition: width 0.45s ease; }
+  .progress-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; }
+
+  nav {
+    background: rgba(16,19,41,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 1rem 1.05rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+  .nav-tab.done { color: var(--correct); }
+
+  main { max-width: 1040px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+  .section { display: none; animation: fadeIn 0.35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  .sec-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+  .sec-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.55rem; flex-shrink: 0; background: rgba(99,102,241,0.15); border: 1px solid rgba(167,139,250,0.25); }
+  .sec-header h2 { font-family: 'Syne', sans-serif; font-size: 1.55rem; font-weight: 800; color: #fff; }
+  .sec-header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+  .card {
+    background: rgba(22,26,54,0.94);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.16);
+  }
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--accent2);
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card p, .card li { line-height: 1.72; color: var(--text); font-size: 0.95rem; }
+  .card ul, .card ol { padding-left: 1.4rem; margin-top: 0.5rem; }
+  .card li { margin-bottom: 0.35rem; }
+  code { font-family: 'Space Mono', monospace; color: #c4b5fd; font-size: 0.9em; }
+
+  .highlight { background: rgba(99,102,241,0.12); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 0.8rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; line-height: 1.65; }
+  .highlight.blue { background: rgba(56,189,248,0.10); border-color: var(--accent3); }
+  .highlight.orange { background: rgba(245,158,11,0.10); border-color: var(--accent4); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media(max-width:760px) { .two-col, .three-col { grid-template-columns: 1fr; } main { padding: 1.25rem; } nav { padding: 0 1rem; } header { padding-left: 1.25rem; padding-right: 1.25rem; } }
+
+  .concept-chip { display: inline-block; background: rgba(99,102,241,0.14); border: 1px solid rgba(167,139,250,0.35); color: #c4b5fd; border-radius: 7px; padding: 4px 10px; font-size: 0.8rem; font-weight: 800; margin: 3px 3px 3px 0; }
+  .img-card { background: #0d1024; border: 1px solid var(--border); border-radius: 14px; padding: 0.75rem; margin-top: 0.85rem; overflow: hidden; }
+  .lesson-img { width: 100%; display: block; border-radius: 10px; background: #fff; }
+  .caption { color: var(--muted); font-size: 0.8rem; line-height: 1.5; margin-top: 0.55rem; }
+
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+  .tool-card { background:#0d1024; border:1px solid var(--border); border-radius:13px; padding:0.9rem; transition: transform 0.18s, border-color 0.18s; }
+  .tool-card:hover { transform: translateY(-2px); border-color: var(--accent2); }
+  .tool-card strong { display:block; color:#fff; font-family:'Syne',sans-serif; margin-bottom:0.25rem; }
+  .tool-card span { color:var(--muted); font-size:0.86rem; line-height:1.55; }
+
+  .nice-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; overflow: hidden; border-radius: 10px; margin-top: 0.8rem; }
+  .nice-table th { background: var(--accent); color: #070817; font-family: 'Syne', sans-serif; font-weight: 800; padding: 0.65rem 0.8rem; text-align: left; }
+  .nice-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--border); }
+  .nice-table tr:last-child td { border-bottom: none; }
+  .nice-table tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+
+  .format-lab { background:#0d1024; border:1px solid var(--border); border-radius:15px; padding:1.1rem; margin-top:0.85rem; }
+  .btn-row { display:flex; flex-wrap:wrap; gap:0.55rem; margin-bottom:1rem; }
+  .toggle-btn, .choice-btn { background:var(--surface); border:2px solid var(--border); color:var(--text); border-radius:10px; padding:0.55rem 0.9rem; font-family:'Syne',sans-serif; font-weight:800; cursor:pointer; transition:0.18s; }
+  .toggle-btn.on, .choice-btn.selected { background:rgba(99,102,241,0.20); border-color:var(--accent2); color:#c4b5fd; }
+  .sample-box { background:#fff; color:#111827; border-radius:12px; padding:1.1rem; min-height:76px; font-size:1.05rem; line-height:1.7; }
+  .sample-box.center { text-align:center; }
+  .sample-box.right { text-align:right; }
+  .sample-box.justify { text-align:justify; }
+  .sample-box.highlighted span { background:#fde68a; }
+
+  .practice-box { background:#0d1024; border:1px solid var(--border); border-radius:14px; padding:1rem; margin-top:0.75rem; }
+  .practice-title { font-family:'Syne',sans-serif; font-weight:800; color:#fff; margin-bottom:0.5rem; }
+
+  .match-game { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.75rem; }
+  @media(max-width:600px) { .match-game { grid-template-columns:1fr; } }
+  .match-item { background:var(--surface); border:2px solid var(--border); border-radius:10px; padding:0.65rem 1rem; cursor:pointer; font-size:0.88rem; text-align:center; transition:border-color 0.2s, background 0.2s; user-select:none; }
+  .match-item.selected { border-color:var(--accent2); background:rgba(99,102,241,0.12); }
+  .match-item.matched { border-color:var(--correct); background:rgba(52,211,153,0.10); cursor:default; color:var(--correct); }
+  .match-item.wrong-match { border-color:var(--wrong); background:rgba(251,113,133,0.10); animation:shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+  .quiz-q { background: rgba(22,26,54,0.96); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .quiz-q .q-text { font-weight: 800; font-size: 1rem; margin-bottom: 1rem; line-height: 1.5; }
+  .q-num { display:inline-block; background:var(--accent); color:#070817; font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; padding:2px 8px; border-radius:4px; margin-right:0.5rem; }
+  .options { display:flex; flex-direction:column; gap:0.6rem; }
+  .option-btn { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:0.7rem 1rem; color:var(--text); font-family:'Nunito',sans-serif; font-size:0.92rem; cursor:pointer; text-align:left; transition:border-color 0.2s, background 0.2s, transform 0.1s; }
+  .option-btn:hover:not(:disabled) { border-color:var(--accent2); background:rgba(99,102,241,0.10); transform:translateX(3px); }
+  .option-btn.correct { border-color:var(--correct); background:rgba(52,211,153,0.12); color:var(--correct); }
+  .option-btn.wrong { border-color:var(--wrong); background:rgba(251,113,133,0.12); color:var(--wrong); }
+  .option-btn:disabled { cursor:default; transform:none; }
+  .feedback { margin-top:0.75rem; padding:0.6rem 1rem; border-radius:8px; font-size:0.88rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:rgba(52,211,153,0.12); color:var(--correct); border:1px solid var(--correct); }
+  .feedback.bad { background:rgba(251,113,133,0.12); color:var(--wrong); border:1px solid var(--wrong); }
+  .blank-input { background:var(--surface); border:2px solid var(--border); border-radius:8px; padding:0.55rem 0.9rem; color:var(--text); font-family:'Space Mono',monospace; font-size:0.88rem; width:100%; outline:none; transition:border-color 0.2s; margin-top:0.5rem; }
+  .blank-input:focus { border-color:var(--accent2); }
+  .blank-input.correct { border-color:var(--correct); }
+  .blank-input.wrong { border-color:var(--wrong); }
+  .check-btn { margin-top:0.75rem; background:var(--accent2); color:#070817; border:none; border-radius:8px; padding:0.55rem 1.35rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; cursor:pointer; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),#4f46e5); color:#fff; border:none; border-radius:10px; padding:0.75rem 2rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; box-shadow:0 4px 14px rgba(99,102,241,0.25); display:inline-block; margin-top:1rem; text-decoration:none; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(99,102,241,0.35); }
+  .btn-secondary { background:transparent; border:2px solid var(--accent2); color:var(--accent2); border-radius:10px; padding:0.65rem 1.5rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; cursor:pointer; margin-top:1rem; }
+  .score-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(167,139,250,0.12); border:1px solid var(--accent2); border-radius:99px; padding:4px 14px; color:var(--accent2); font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; margin-left:0.75rem; }
+  #result-banner { display:none; background:linear-gradient(135deg,#1e1b4b,#090b1a); border:2px solid var(--correct); border-radius:16px; padding:2rem; text-align:center; margin-bottom:2rem; }
+  #result-banner h2 { font-family:'Syne',sans-serif; font-size:1.6rem; color:var(--correct); }
+  #result-banner p { color:var(--muted); margin-top:0.5rem; }
+  #result-banner .big-score { font-size:3rem; font-weight:800; color:var(--accent2); font-family:'Syne',sans-serif; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a href="index.html#grades" class="back-link">← Back to all lessons</a><br>
+    <span class="chapter-badge">Chapter 3 · Grade 8 ICT</span>
+    <h1>Word Processing</h1>
+    <p>Learn how to create, save, format, align, decorate, insert objects, check spelling, and build simple tables using word processing software.</p>
+    <div class="progress-bar-wrap"><div id="global-progress"></div></div>
+    <div class="progress-label" id="progress-label">0 of 7 sections visited</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" data-sec="s1" onclick="showSection('s1',this)">📋 Overview</div>
+  <div class="nav-tab" data-sec="s2" onclick="showSection('s2',this)">🏠 Word Home</div>
+  <div class="nav-tab" data-sec="s3" onclick="showSection('s3',this)">💾 Common Tools</div>
+  <div class="nav-tab" data-sec="s4" onclick="showSection('s4',this)">✨ Formatting</div>
+  <div class="nav-tab" data-sec="s5" onclick="showSection('s5',this)">📐 Align & Insert</div>
+  <div class="nav-tab" data-sec="s6" onclick="showSection('s6',this)">▦ Tables</div>
+  <div class="nav-tab" data-sec="s7" onclick="showSection('s7',this)">✏️ Quiz</div>
+</nav>
+
+<main>
+<!-- SECTION 1 -->
+<div class="section active" id="s1">
+  <div class="sec-header">
+    <div class="sec-icon">📋</div>
+    <div><h2>What You'll Learn</h2><p>Chapter roadmap and key ideas</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📌 What is Word Processing?</h3>
+    <p><strong>Word processing</strong> means creating documents using word processing software. It is used to type, edit, format, save, print, and improve documents neatly.</p>
+    <div class="highlight">Instead of preparing documents manually, word processing software helps us make invitations, letters, reports, posters, forms, certificates, and many other documents faster and more attractively.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🧠 Key Terms</h3>
+      <span class="concept-chip">Document</span>
+      <span class="concept-chip">Cursor</span>
+      <span class="concept-chip">Home Tab</span>
+      <span class="concept-chip">Font</span>
+      <span class="concept-chip">Alignment</span>
+      <span class="concept-chip">Word Art</span>
+      <span class="concept-chip">Table</span>
+      <span class="concept-chip">Spell Check</span>
+    </div>
+    <div class="card">
+      <h3>✅ Skills by the End</h3>
+      <ul>
+        <li>Create, open, save, save as, close, preview, and print documents</li>
+        <li>Use Cut, Copy, Paste, Undo, Redo, and Spell Check</li>
+        <li>Format text using font, size, colour, bold, italic, underline, highlight, subscript, and superscript</li>
+        <li>Insert pictures, shapes, text boxes, Word Art, clip art, and tables</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📄 Documents You Can Make</h3>
+    <div class="img-card">
+      <img class="lesson-img" src="images/word_document_types.png" alt="Examples of documents produced using word processing software">
+      <div class="caption">Examples include letters, question papers, newspapers, application forms, invitations, greeting cards, magazines, and more.</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s2', document.querySelector('[data-sec=s2]'))">Start Lesson →</button>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="sec-header">
+    <div class="sec-icon">🏠</div>
+    <div><h2>Microsoft Word Home Page</h2><p>The important icon groups on the Home tab</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ Home Page Icon Map</h3>
+    <p>This image shows the Word interface and the main Home tab areas students must recognize: text formatting tools, alignment/positioning tools, and the cursor point.</p>
+    <div class="img-card">
+      <img class="lesson-img" src="images/word_home_interface.png" alt="Microsoft Word Home tab showing text formatting tools, alignment tools, and cursor point">
+      <div class="caption">Use this picture as the main visual reference when explaining icons in the Home page / Home tab.</div>
+    </div>
+  </div>
+
+  <div class="three-col">
+    <div class="card">
+      <h3>🔤 Font Group</h3>
+      <p>Used to change the appearance of selected text.</p>
+      <span class="concept-chip">Font</span><span class="concept-chip">Size</span><span class="concept-chip">Bold</span><span class="concept-chip">Italic</span><span class="concept-chip">Underline</span><span class="concept-chip">Colour</span>
+    </div>
+    <div class="card">
+      <h3>📐 Paragraph Group</h3>
+      <p>Used to arrange paragraphs and lines neatly.</p>
+      <span class="concept-chip">Align Left</span><span class="concept-chip">Center</span><span class="concept-chip">Right</span><span class="concept-chip">Justify</span><span class="concept-chip">Bullets</span><span class="concept-chip">Numbering</span>
+    </div>
+    <div class="card">
+      <h3>✍️ Cursor Point</h3>
+      <p>The cursor point shows where the next character will appear when you type.</p>
+      <div class="highlight blue">Click inside the document to place the cursor before typing or inserting an object.</div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2)">
+    <h3>✍️ Quick Check</h3>
+    <p>Which group contains Bold, Italic, Underline and Font Size?</p>
+    <div id="qc1" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Paragraph group</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,true)">Font group</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Page group</button>
+    </div>
+    <div id="qc1-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s3', document.querySelector('[data-sec=s3]'))">Next: Common Tools →</button>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="sec-header">
+    <div class="sec-icon">💾</div>
+    <div><h2>Common and Editing Tools</h2><p>New, Open, Save, Print, Undo, Redo, Cut, Copy, Paste, Spell Check</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📁 Common Tools</h3>
+    <div class="img-card">
+      <img class="lesson-img" src="images/word_common_tools.png" alt="Common word processing tools: New, Open, Save, Save As, Print Preview and Print">
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card"><strong>New</strong><span>Open a new blank document.</span></div>
+      <div class="tool-card"><strong>Open</strong><span>Open a saved document.</span></div>
+      <div class="tool-card"><strong>Save</strong><span>Save the current document.</span></div>
+      <div class="tool-card"><strong>Save As</strong><span>Save a document using a new name or location.</span></div>
+      <div class="tool-card"><strong>Print Preview</strong><span>View the document before printing.</span></div>
+      <div class="tool-card"><strong>Print</strong><span>Print the document on paper.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>✂️ Editing Tools</h3>
+    <div class="img-card">
+      <img class="lesson-img" src="images/word_editing_tools.png" alt="Editing tools: Undo, Redo, Copy, Cut, Paste and Spell Check">
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card"><strong>Undo</strong><span>Cancel the last action.</span></div>
+      <div class="tool-card"><strong>Redo</strong><span>Bring back an undone action.</span></div>
+      <div class="tool-card"><strong>Cut</strong><span>Remove selected text or image and place it on the clipboard.</span></div>
+      <div class="tool-card"><strong>Copy</strong><span>Copy selected text or image without removing it.</span></div>
+      <div class="tool-card"><strong>Paste</strong><span>Insert copied or cut content at the cursor point.</span></div>
+      <div class="tool-card"><strong>Spell Check</strong><span>Check spelling and grammar errors.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Match the Tool</h3>
+    <p>Click a tool name, then click its correct function.</p>
+    <div class="match-game" id="match-game">
+      <div class="match-item" data-id="save" data-group="tool" onclick="doMatch(this)">Save</div>
+      <div class="match-item" data-id="paste" data-group="rule" onclick="doMatch(this)">Insert copied content</div>
+      <div class="match-item" data-id="copy" data-group="tool" onclick="doMatch(this)">Copy</div>
+      <div class="match-item" data-id="undo" data-group="rule" onclick="doMatch(this)">Cancel the last action</div>
+      <div class="match-item" data-id="undo" data-group="tool" onclick="doMatch(this)">Undo</div>
+      <div class="match-item" data-id="save" data-group="rule" onclick="doMatch(this)">Store the document</div>
+      <div class="match-item" data-id="paste" data-group="tool" onclick="doMatch(this)">Paste</div>
+      <div class="match-item" data-id="copy" data-group="rule" onclick="doMatch(this)">Duplicate selected content</div>
+    </div>
+    <div id="match-result" style="margin-top:0.75rem;color:var(--correct);font-weight:800;display:none">All matched correctly.</div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s4', document.querySelector('[data-sec=s4]'))">Next: Text Formatting →</button>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="sec-header">
+    <div class="sec-icon">✨</div>
+    <div><h2>Text Formatting Tools</h2><p>Make selected words clearer and more attractive</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🔤 Formatting Icon Guide</h3>
+    <div class="img-card">
+      <img class="lesson-img" src="images/word_text_formatting_tools.png" alt="Text formatting tools including font, size, bold, italic, underline, colour, highlight, subscript and superscript">
+      <div class="caption">Before formatting, select the word, sentence, line, paragraph, or full document that needs the change.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Formatting Lab</h3>
+    <p>Click the buttons to format the sample sentence.</p>
+    <div class="format-lab">
+      <div class="btn-row">
+        <button class="toggle-btn" id="boldBtn" onclick="toggleFormat('bold')">Bold</button>
+        <button class="toggle-btn" id="italicBtn" onclick="toggleFormat('italic')">Italic</button>
+        <button class="toggle-btn" id="underlineBtn" onclick="toggleFormat('underline')">Underline</button>
+        <button class="toggle-btn" id="highlightBtn" onclick="toggleFormat('highlighted')">Highlight</button>
+      </div>
+      <div class="sample-box" id="sampleText"><span>Word processing helps us create neat and attractive documents.</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>✅ Good Formatting Rules</h3>
+      <ul>
+        <li>Use bold for headings or important words.</li>
+        <li>Use font colour carefully so text remains readable.</li>
+        <li>Use highlight only for key words.</li>
+        <li>Use superscript and subscript for special text such as 2<sup>2</sup> and CO<sub>2</sub>.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>✍️ Select Text First</h3>
+      <table class="nice-table">
+        <thead><tr><th>Need to Select</th><th>Method</th></tr></thead>
+        <tbody>
+          <tr><td>Single word</td><td>Double click the word</td></tr>
+          <tr><td>Paragraph</td><td>Triple click the paragraph</td></tr>
+          <tr><td>Whole document</td><td>Press Ctrl + A</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s5', document.querySelector('[data-sec=s5]'))">Next: Alignment & Insert →</button>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="sec-header">
+    <div class="sec-icon">📐</div>
+    <div><h2>Alignment, Positioning and Insert Objects</h2><p>Arrange text and add objects to improve documents</p></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>📐 Alignment and Positioning Tools</h3>
+      <div class="img-card">
+        <img class="lesson-img" src="images/word_alignment_tools.png" alt="Alignment and positioning tools including align left, center, right, justify, line spacing, bullets, numbering and shading">
+      </div>
+    </div>
+    <div class="card">
+      <h3>🧩 Insert Objects</h3>
+      <div class="img-card">
+        <img class="lesson-img" src="images/word_insert_objects.png" alt="Insert object tools including pictures, shapes, text boxes, clip art, Word Art and tables">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Alignment Lab</h3>
+    <p>Change the alignment of the sample paragraph.</p>
+    <div class="format-lab">
+      <div class="btn-row">
+        <button class="choice-btn selected" onclick="setAlign('left',this)">Left</button>
+        <button class="choice-btn" onclick="setAlign('center',this)">Center</button>
+        <button class="choice-btn" onclick="setAlign('right',this)">Right</button>
+        <button class="choice-btn" onclick="setAlign('justify',this)">Justify</button>
+      </div>
+      <div class="sample-box" id="alignSample">Save Trees, Save Mother Earth. Word processing tools help us make headings, paragraphs, lists, posters and school documents clear and attractive.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ When to Insert Objects</h3>
+    <div class="tool-grid">
+      <div class="tool-card"><strong>Pictures</strong><span>Add photos or images to explain an idea.</span></div>
+      <div class="tool-card"><strong>Shapes</strong><span>Draw arrows, boxes, circles and labels.</span></div>
+      <div class="tool-card"><strong>Text Boxes</strong><span>Place text in a separate movable box.</span></div>
+      <div class="tool-card"><strong>Word Art</strong><span>Create decorative titles for posters.</span></div>
+      <div class="tool-card"><strong>Tables</strong><span>Arrange information in rows and columns.</span></div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s6', document.querySelector('[data-sec=s6]'))">Next: Tables →</button>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="sec-header">
+    <div class="sec-icon">▦</div>
+    <div><h2>Tables and Practice Tasks</h2><p>Rows, columns, cells, merging, shading and alignment</p></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>▦ Rows, Columns and Cells</h3>
+      <div class="img-card">
+        <img class="lesson-img" src="images/word_table_rows_columns_cells.png" alt="A table showing row, column and cell labels">
+      </div>
+      <div class="highlight blue">A <strong>cell</strong> is the place where a row and a column meet.</div>
+    </div>
+    <div class="card">
+      <h3>📊 Table Example</h3>
+      <div class="img-card">
+        <img class="lesson-img" src="images/word_table_multiplication_chart.png" alt="Multiplication chart table created using word processing table tools">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🛠️ Table Tools Checklist</h3>
+    <table class="nice-table">
+      <thead><tr><th>Action</th><th>Menu Path / Idea</th></tr></thead>
+      <tbody>
+        <tr><td>Insert a table</td><td>Insert → Table → Insert Table</td></tr>
+        <tr><td>Merge cells</td><td>Table Tools → Layout → Merge Cells</td></tr>
+        <tr><td>Colour a cell</td><td>Home → Shading</td></tr>
+        <tr><td>Center-align cell text</td><td>Table Tools → Layout → Alignment</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Practice Tasks</h3>
+    <div class="practice-box"><div class="practice-title">Task 1</div><p>Create a simple invitation card for a school function using title text, font colour, an image, a shape and a page border.</p></div>
+    <div class="practice-box"><div class="practice-title">Task 2</div><p>Create a classroom timetable table. Add headings, shade the first row, and center-align all text.</p></div>
+    <div class="practice-box"><div class="practice-title">Task 3</div><p>Create a poster with a Word Art title, inserted picture, three text boxes and a coloured shape.</p></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s7', document.querySelector('[data-sec=s7]'))">Next: Quiz →</button>
+</div>
+
+<!-- SECTION 7 QUIZ -->
+<div class="section" id="s7">
+  <div class="sec-header">
+    <div class="sec-icon">✏️</div>
+    <div><h2>Chapter Quiz</h2><p>20 questions · instant feedback <span class="score-pill">Score: <span id="score-now">0</span>/20</span></p></div>
+  </div>
+
+  <div id="result-banner">
+    <h2>Quiz Complete</h2>
+    <div class="big-score"><span id="final-score">0</span>/20</div>
+    <p id="final-msg">Review the lesson and try again.</p>
+    <button class="btn-secondary" onclick="resetQuiz()">Reset Quiz</button>
+  </div>
+
+  <div class="quiz-q" id="q1"><div class="q-text"><span class="q-num">Q1</span> What is word processing?</div><div class="options" id="q1-opts"><button class="option-btn" onclick="answerQ('q1',this,false)">Playing computer games only</button><button class="option-btn" data-correct="true" onclick="answerQ('q1',this,true)">Creating documents using word processing software</button><button class="option-btn" onclick="answerQ('q1',this,false)">Formatting a hard disk</button></div><div id="q1-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q2"><div class="q-text"><span class="q-num">Q2</span> Which of these can be produced using word processing software?</div><div class="options" id="q2-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q2',this,true)">Letters and invitations</button><button class="option-btn" onclick="answerQ('q2',this,false)">Only audio files</button><button class="option-btn" onclick="answerQ('q2',this,false)">Only viruses</button></div><div id="q2-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q3"><div class="q-text"><span class="q-num">Q3</span> Which tool opens a new blank document?</div><div class="options" id="q3-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q3',this,true)">New</button><button class="option-btn" onclick="answerQ('q3',this,false)">Print</button><button class="option-btn" onclick="answerQ('q3',this,false)">Paste</button></div><div id="q3-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q4"><div class="q-text"><span class="q-num">Q4</span> Which tool opens an already saved document?</div><div class="options" id="q4-opts"><button class="option-btn" onclick="answerQ('q4',this,false)">Save</button><button class="option-btn" data-correct="true" onclick="answerQ('q4',this,true)">Open</button><button class="option-btn" onclick="answerQ('q4',this,false)">Bold</button></div><div id="q4-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q5"><div class="q-text"><span class="q-num">Q5</span> Save As is used to:</div><div class="options" id="q5-opts"><button class="option-btn" onclick="answerQ('q5',this,false)">Delete the document</button><button class="option-btn" data-correct="true" onclick="answerQ('q5',this,true)">Save the document in a different name or location</button><button class="option-btn" onclick="answerQ('q5',this,false)">Check the spelling</button></div><div id="q5-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q6"><div class="q-text"><span class="q-num">Q6</span> Which tool shows how the document will look before printing?</div><div class="options" id="q6-opts"><button class="option-btn" onclick="answerQ('q6',this,false)">Undo</button><button class="option-btn" data-correct="true" onclick="answerQ('q6',this,true)">Print Preview</button><button class="option-btn" onclick="answerQ('q6',this,false)">Font Size</button></div><div id="q6-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q7"><div class="q-text"><span class="q-num">Q7</span> Undo is used to:</div><div class="options" id="q7-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q7',this,true)">Cancel the last action</button><button class="option-btn" onclick="answerQ('q7',this,false)">Print the page</button><button class="option-btn" onclick="answerQ('q7',this,false)">Insert a table</button></div><div id="q7-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q8"><div class="q-text"><span class="q-num">Q8</span> Which pair is used for duplicating selected text?</div><div class="options" id="q8-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q8',this,true)">Copy and Paste</button><button class="option-btn" onclick="answerQ('q8',this,false)">Cut and Delete</button><button class="option-btn" onclick="answerQ('q8',this,false)">Bold and Italic</button></div><div id="q8-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q9"><div class="q-text"><span class="q-num">Q9</span> Spell Check is used to check:</div><div class="options" id="q9-opts"><button class="option-btn" onclick="answerQ('q9',this,false)">Page colour only</button><button class="option-btn" data-correct="true" onclick="answerQ('q9',this,true)">Spelling and grammar</button><button class="option-btn" onclick="answerQ('q9',this,false)">Computer memory</button></div><div id="q9-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q10"><div class="q-text"><span class="q-num">Q10</span> Bold is used to:</div><div class="options" id="q10-opts"><button class="option-btn" onclick="answerQ('q10',this,false)">Make text slanted</button><button class="option-btn" data-correct="true" onclick="answerQ('q10',this,true)">Darken the text</button><button class="option-btn" onclick="answerQ('q10',this,false)">Move text to the right</button></div><div id="q10-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q11"><div class="q-text"><span class="q-num">Q11</span> Italic makes text:</div><div class="options" id="q11-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q11',this,true)">Slanted</button><button class="option-btn" onclick="answerQ('q11',this,false)">Underlined</button><button class="option-btn" onclick="answerQ('q11',this,false)">Printed</button></div><div id="q11-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q12"><div class="q-text"><span class="q-num">Q12</span> Underline is used to:</div><div class="options" id="q12-opts"><button class="option-btn" onclick="answerQ('q12',this,false)">Colour the background</button><button class="option-btn" data-correct="true" onclick="answerQ('q12',this,true)">Draw a line under text</button><button class="option-btn" onclick="answerQ('q12',this,false)">Insert a picture</button></div><div id="q12-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q13"><div class="q-text"><span class="q-num">Q13</span> Which tool is used to draw attention to selected text?</div><div class="options" id="q13-opts"><button class="option-btn" onclick="answerQ('q13',this,false)">Subscript</button><button class="option-btn" data-correct="true" onclick="answerQ('q13',this,true)">Highlight</button><button class="option-btn" onclick="answerQ('q13',this,false)">Print</button></div><div id="q13-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q14"><div class="q-text"><span class="q-num">Q14</span> Which alignment places text in the middle?</div><div class="options" id="q14-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q14',this,true)">Center</button><button class="option-btn" onclick="answerQ('q14',this,false)">Align Left</button><button class="option-btn" onclick="answerQ('q14',this,false)">Shading</button></div><div id="q14-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q15"><div class="q-text"><span class="q-num">Q15</span> Bullets and Numbering are mainly used to prepare:</div><div class="options" id="q15-opts"><button class="option-btn" onclick="answerQ('q15',this,false)">Pictures</button><button class="option-btn" data-correct="true" onclick="answerQ('q15',this,true)">Lists</button><button class="option-btn" onclick="answerQ('q15',this,false)">File names</button></div><div id="q15-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q16"><div class="q-text"><span class="q-num">Q16</span> Which feature inserts artistic letters for titles?</div><div class="options" id="q16-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q16',this,true)">Word Art</button><button class="option-btn" onclick="answerQ('q16',this,false)">Spell Check</button><button class="option-btn" onclick="answerQ('q16',this,false)">Save As</button></div><div id="q16-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q17"><div class="q-text"><span class="q-num">Q17</span> A table is made using:</div><div class="options" id="q17-opts"><button class="option-btn" onclick="answerQ('q17',this,false)">Only colours</button><button class="option-btn" data-correct="true" onclick="answerQ('q17',this,true)">Rows and columns</button><button class="option-btn" onclick="answerQ('q17',this,false)">Only pictures</button></div><div id="q17-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q18"><div class="q-text"><span class="q-num">Q18</span> The place where a row and column intersect is called a:</div><div class="options" id="q18-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q18',this,true)">Cell</button><button class="option-btn" onclick="answerQ('q18',this,false)">Font</button><button class="option-btn" onclick="answerQ('q18',this,false)">Cursor</button></div><div id="q18-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q19"><div class="q-text"><span class="q-num">Q19</span> Complete the sentence:</div><p>The blinking mark that shows where typed text will appear is the <strong>________</strong>.</p><input class="blank-input" id="q19-input" placeholder="Type your answer here..."/><button class="check-btn" onclick="checkFill('q19','cursor|cursor point|insertion point')">Check Answer</button><div id="q19-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q20"><div class="q-text"><span class="q-num">Q20</span> Complete the sentence:</div><p>To select the whole document quickly, press <strong>________</strong>.</p><input class="blank-input" id="q20-input" placeholder="Type your answer here..."/><button class="check-btn" onclick="checkFill('q20','ctrl+a|ctrl + a|control+a|control + a')">Check Answer</button><div id="q20-fb" class="feedback"></div></div>
+
+  <button class="btn-primary" id="finish-btn" onclick="finishQuiz()" style="display:none">See My Results</button>
+</div>
+</main>
+
+<script>
+const visited = new Set(['s1']);
+const totalSecs = 7;
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (tab) tab.classList.add('active');
+  visited.add(id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSecs) * 100);
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = visited.size + ' of ' + totalSecs + ' sections visited';
+  visited.forEach(id => {
+    const tab = document.querySelector('[data-sec="' + id + '"]');
+    if (tab && !tab.classList.contains('active')) tab.classList.add('done');
+  });
+}
+updateProgress();
+
+function quickCheck(id, btn, correct) {
+  const container = document.getElementById(id);
+  container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not quite. Review the icon groups above.';
+  }
+}
+
+function toggleFormat(name) {
+  const box = document.getElementById('sampleText');
+  const btn = document.getElementById(name + 'Btn');
+  btn.classList.toggle('on');
+  if (name === 'bold') box.style.fontWeight = btn.classList.contains('on') ? '800' : '400';
+  if (name === 'italic') box.style.fontStyle = btn.classList.contains('on') ? 'italic' : 'normal';
+  if (name === 'underline') box.style.textDecoration = btn.classList.contains('on') ? 'underline' : 'none';
+  if (name === 'highlighted') box.classList.toggle('highlighted');
+}
+function setAlign(align, btn) {
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const sample = document.getElementById('alignSample');
+  sample.classList.remove('center','right','justify');
+  if (align !== 'left') sample.classList.add(align);
+}
+
+let selectedMatch = null;
+let matchedCount = 0;
+function doMatch(el) {
+  if (el.classList.contains('matched')) return;
+  if (!selectedMatch) {
+    selectedMatch = el;
+    el.classList.add('selected');
+    return;
+  }
+  if (selectedMatch === el) {
+    selectedMatch.classList.remove('selected');
+    selectedMatch = null;
+    return;
+  }
+  const sameGroup = selectedMatch.dataset.group === el.dataset.group;
+  const sameId = selectedMatch.dataset.id === el.dataset.id;
+  if (!sameGroup && sameId) {
+    selectedMatch.classList.remove('selected');
+    selectedMatch.classList.add('matched');
+    el.classList.add('matched');
+    matchedCount += 1;
+    selectedMatch = null;
+    if (matchedCount === 4) document.getElementById('match-result').style.display = 'block';
+  } else {
+    el.classList.add('wrong-match');
+    selectedMatch.classList.add('wrong-match');
+    const prev = selectedMatch;
+    setTimeout(() => {
+      el.classList.remove('wrong-match');
+      prev.classList.remove('wrong-match','selected');
+      selectedMatch = null;
+    }, 450);
+  }
+}
+
+let score = 0;
+let answered = 0;
+const totalQ = 20;
+function answerQ(qid, btn, correct) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  box.dataset.answered = 'true';
+  const opts = document.getElementById(qid + '-opts');
+  opts.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+  });
+  const fb = document.getElementById(qid + '-fb');
+  answered++;
+  if (correct) {
+    score++;
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+  }
+  updateScore();
+  checkShowFinish();
+}
+function checkFill(qid, answersStr) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  const input = document.getElementById(qid + '-input');
+  const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const answers = answersStr.split('|').map(a => a.trim().toLowerCase());
+  const fb = document.getElementById(qid + '-fb');
+  box.dataset.answered = 'true';
+  answered++;
+  if (answers.includes(val)) {
+    score++;
+    input.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    input.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not correct. Accepted answer: ' + answers[0] + '.';
+  }
+  input.disabled = true;
+  updateScore();
+  checkShowFinish();
+}
+function updateScore() { document.getElementById('score-now').textContent = score; }
+function checkShowFinish() { if (answered >= totalQ) document.getElementById('finish-btn').style.display = 'inline-block'; }
+function finishQuiz() {
+  document.getElementById('final-score').textContent = score;
+  let msg = 'Review the lesson and try again.';
+  if (score >= 18) msg = 'Excellent. You have strong control of Word Processing tools.';
+  else if (score >= 14) msg = 'Good work. Revise formatting, alignment and table tools.';
+  else if (score >= 10) msg = 'Fair attempt. Review the icon guide and common tools again.';
+  document.getElementById('final-msg').textContent = msg;
+  document.getElementById('result-banner').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetQuiz() { location.reload(); }
+</script>
+</body>
+</html>
