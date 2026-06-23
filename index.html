@@ -20,6 +20,7 @@
     --grade8: #06b6d4;
     --grade9: #f59e0b;
     --grade10: #22c55e;
+    --os: #facc15;
     --grade11: #8b5cf6;
     --sheets: #fb3d75;
   }
@@ -395,6 +396,9 @@
   .topic-card.c10::before {
     background: radial-gradient(ellipse at top left, rgba(34,197,94,0.08), transparent 60%);
   }
+  .topic-card.c10os::before {
+    background: radial-gradient(ellipse at top left, rgba(250,204,21,0.10), transparent 60%);
+  }
   .topic-card.c11::before {
     background: radial-gradient(ellipse at top left, rgba(139,92,246,0.08), transparent 60%);
   }
@@ -419,6 +423,7 @@
   .card-icon.c8 { background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.25); }
   .card-icon.c9 { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.25); }
   .card-icon.c10 { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.25); }
+  .card-icon.c10os { background: rgba(250,204,21,0.15); border: 1px solid rgba(250,204,21,0.30); }
   .card-icon.c11 { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.25); }
   .card-icon.csheets { background: rgba(251,61,117,0.15); border: 1px solid rgba(251,61,117,0.3); }
 
@@ -434,6 +439,7 @@
   .card-chapter.c8 { color: var(--grade8); }
   .card-chapter.c9 { color: var(--grade9); }
   .card-chapter.c10 { color: var(--grade10); }
+  .card-chapter.c10os { color: var(--os); }
   .card-chapter.c11 { color: var(--grade11); }
   .card-chapter.csheets { color: var(--sheets); }
 
@@ -494,6 +500,7 @@
   .card-arrow.c8 { background: rgba(6,182,212,0.15); color: var(--grade8); }
   .card-arrow.c9 { background: rgba(245,158,11,0.15); color: var(--grade9); }
   .card-arrow.c10 { background: rgba(34,197,94,0.15); color: var(--grade10); }
+  .card-arrow.c10os { background: rgba(250,204,21,0.15); color: var(--os); }
   .card-arrow.c11 { background: rgba(139,92,246,0.15); color: var(--grade11); }
   .card-arrow.csheets { background: rgba(251,61,117,0.15); color: var(--sheets); }
   .topic-card.coming-soon { opacity: 0.72; cursor: default; }
@@ -735,7 +742,7 @@
       <div class="grade-badge g10">🎓 Grade 10</div>
       <div>
         <div class="grade-title">Grade 10 ICT</div>
-        <div class="grade-desc">Digital logic, Boolean thinking, and hardware foundations</div>
+        <div class="grade-desc">Digital logic, operating systems, and hardware foundations</div>
       </div>
     </div>
     <div class="cards-grid">
@@ -754,6 +761,24 @@
         <div class="card-footer">
           <span class="card-meta">📝 20 Questions · 7 Sections</span>
           <div class="card-arrow c10">→</div>
+        </div>
+      </a>
+
+      <a href="operating_systems.html" class="topic-card c10os">
+        <div class="card-icon c10os">🖥️</div>
+        <div class="card-chapter c10os">Chapter 5</div>
+        <div class="card-title">Operating Systems</div>
+        <div class="card-desc">Study how an operating system manages hardware, software, files, devices, memory, security, networks, utilities, booting, CLI, GUI, and WIMP components.</div>
+        <div class="card-tags">
+          <span class="tag">Booting</span>
+          <span class="tag">OS Services</span>
+          <span class="tag">CLI & GUI</span>
+          <span class="tag">Utilities</span>
+          <span class="tag">Files</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-meta">📝 20 Questions · 7 Sections</span>
+          <div class="card-arrow c10os">→</div>
         </div>
       </a>
     </div>

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grade 10 ICT – Chapter 5: Operating Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08111f;
+    --surface: #0e1729;
+    --card: #132238;
+    --accent: #facc15;
+    --accent2: #38bdf8;
+    --accent3: #f97316;
+    --accent4: #a78bfa;
+    --text: #e8eef8;
+    --muted: #94a3b8;
+    --border: #24364f;
+    --correct: #34d399;
+    --wrong: #fb7185;
+    --warn: #facc15;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(250,204,21,0.08), transparent 28%),
+      radial-gradient(circle at bottom left, rgba(56,189,248,0.08), transparent 30%),
+      var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.035) 1px, transparent 1px);
+    background-size: 58px 58px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0e1729 0%, #08111f 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 2rem 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -70px;
+    width: 270px; height: 270px;
+    background: radial-gradient(circle, rgba(250,204,21,0.18), transparent 72%);
+    border-radius: 50%;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -120px; left: 10%;
+    width: 300px; height: 260px;
+    background: radial-gradient(circle, rgba(56,189,248,0.12), transparent 70%);
+    border-radius: 50%;
+  }
+  .header-inner { max-width: 980px; margin: 0 auto; position: relative; z-index: 1; }
+  .top-link {
+    display:inline-flex; align-items:center; gap:0.45rem;
+    color:var(--muted); text-decoration:none; font-weight:800; font-size:0.82rem;
+    margin-bottom:0.85rem; transition:color 0.2s;
+  }
+  .top-link:hover { color: var(--text); }
+  .chapter-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #1a1200;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 13px;
+    border-radius: 5px;
+    margin-bottom: 0.75rem;
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.85rem, 4vw, 3rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.12;
+  }
+  header p { color: var(--muted); margin-top: 0.55rem; font-size: 1rem; line-height: 1.7; max-width: 800px; }
+  .header-actions { display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.2rem; }
+  .progress-bar-wrap { margin-top: 1.2rem; background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; }
+  #global-progress { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; width: 0%; transition: width 0.45s ease; }
+  .progress-label { color: var(--muted); font-size: 0.8rem; margin-top: 0.4rem; }
+
+  nav {
+    background: rgba(14,23,41,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab.done { color: var(--correct); }
+
+  main { max-width: 980px; margin: 0 auto; padding: 2rem; position: relative; z-index: 1; }
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  .sec-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.75rem; }
+  .sec-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.55rem; flex-shrink: 0; }
+  .sec-header h2 { font-family: 'Syne', sans-serif; font-size: 1.55rem; font-weight: 800; }
+  .sec-header p { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+
+  .card {
+    background: rgba(19,34,56,0.92);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+  .card h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card p, .card li { line-height: 1.72; color: var(--text); font-size: 0.95rem; }
+  .card ul, .card ol { padding-left: 1.4rem; margin-top: 0.5rem; }
+  .card li { margin-bottom: 0.35rem; }
+  code { font-family: 'Space Mono', monospace; color: #b7e4ff; font-size: 0.9em; }
+
+  .highlight { background: rgba(250,204,21,0.10); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 0.75rem 1rem; margin: 0.8rem 0; font-size: 0.93rem; line-height: 1.65; }
+  .highlight.teal { background: rgba(56,189,248,0.10); border-color: var(--accent2); }
+  .highlight.orange { background: rgba(249,115,22,0.10); border-color: var(--accent3); }
+  .highlight.purple { background: rgba(167,139,250,0.11); border-color: var(--accent4); }
+  .highlight.warn { background: rgba(250,204,21,0.10); border-color: var(--warn); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media(max-width:760px) { .two-col, .three-col { grid-template-columns: 1fr; } main { padding: 1.25rem; } nav { padding: 0 1rem; } }
+
+  .concept-chip { display: inline-block; background: rgba(167,139,250,0.12); border: 1px solid var(--accent4); color: var(--accent4); border-radius: 7px; padding: 4px 10px; font-size: 0.8rem; font-weight: 800; margin: 3px 3px 3px 0; }
+  .formula { display: inline-block; background: #091422; border: 1px solid var(--border); color: #fde68a; border-radius: 8px; padding: 6px 12px; font-family: 'Space Mono', monospace; font-weight: 700; margin: 4px 0; }
+
+  .nice-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; overflow: hidden; border-radius: 10px; }
+  .nice-table th { background: var(--accent); color: #1a1200; font-family: 'Syne', sans-serif; font-weight: 800; padding: 0.6rem 0.8rem; text-align: left; }
+  .nice-table td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .nice-table tr:last-child td { border-bottom: none; }
+  .nice-table tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+
+  .img-card { background:#091422; border:1px solid var(--border); border-radius:14px; padding:0.9rem; margin-top:0.75rem; }
+  .lesson-img { width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.08); display:block; background:#fff; }
+  .caption { color:var(--muted); font-size:0.78rem; margin-top:0.55rem; line-height:1.5; }
+
+  .mini-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:0.8rem; margin-top:0.8rem; }
+  .mini-card { background:#091422; border:1px solid var(--border); border-radius:12px; padding:1rem; }
+  .mini-card strong { display:block; font-family:'Syne',sans-serif; color:#fff; margin-bottom:0.35rem; }
+  .mini-card span { color:var(--muted); font-size:0.88rem; line-height:1.55; }
+  .pill { display:inline-flex; align-items:center; gap:0.35rem; border:1px solid var(--border); background:#091422; border-radius:999px; padding:0.35rem 0.75rem; font-size:0.78rem; font-weight:800; color:var(--muted); margin:0.2rem; }
+
+  .timeline { display:grid; gap:0.75rem; counter-reset:boot; padding-left:0!important; }
+  .timeline li { list-style:none; counter-increment:boot; position:relative; background:#091422; border:1px solid var(--border); border-radius:12px; padding:0.9rem 1rem 0.9rem 3rem; }
+  .timeline li::before { content:counter(boot); position:absolute; left:0.9rem; top:0.85rem; background:var(--accent); color:#1a1200; font-family:'Syne',sans-serif; font-weight:800; width:25px; height:25px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.78rem; }
+
+  .service-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:0.85rem; margin-top:0.75rem; }
+  .service-card { background:#091422; border:2px solid var(--border); border-radius:13px; padding:1rem; cursor:pointer; transition:0.18s; }
+  .service-card:hover { border-color:var(--accent2); transform:translateY(-2px); }
+  .service-card.active { border-color:var(--accent); background:rgba(250,204,21,0.08); }
+  .service-card strong { display:block; font-family:'Syne',sans-serif; color:#fff; margin-bottom:0.35rem; }
+  .service-card span { display:block; color:var(--muted); font-size:0.85rem; line-height:1.55; }
+  #service-explain { margin-top:0.9rem; border-color:var(--accent2); }
+
+  .lab-panel { background:#091422; border:1px solid var(--border); border-radius:15px; padding:1.25rem; margin:0.85rem 0; }
+  .switch-row { display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; margin-bottom:1rem; }
+  .toggle-btn, .choice-btn { background:var(--surface); border:2px solid var(--border); color:var(--text); border-radius:12px; padding:0.7rem 1.1rem; font-family:'Syne', sans-serif; font-weight:800; cursor:pointer; transition:0.18s; }
+  .toggle-btn.on, .choice-btn.selected { background:rgba(250,204,21,0.18); border-color:var(--accent); color:var(--accent); }
+  .output-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.65rem; }
+  .output-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:0.85rem; }
+  .output-card span { color:var(--muted); font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.7px; }
+  .output-card strong { display:block; font-family:'Space Mono', monospace; color:#fff; font-size:1.35rem; margin-top:0.1rem; }
+
+  .compare-wrap { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:760px) { .compare-wrap { grid-template-columns:1fr; } }
+  .compare-card { background:#091422; border:1px solid var(--border); border-radius:14px; padding:1rem; }
+  .compare-card h4 { font-family:'Syne',sans-serif; color:#fff; margin-bottom:0.5rem; }
+  .fake-window { background:#0c1220; border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-top:0.7rem; }
+  .fake-bar { background:#17243a; padding:0.45rem 0.65rem; color:var(--muted); font-size:0.75rem; font-family:'Space Mono',monospace; }
+  .fake-body { padding:0.85rem; font-family:'Space Mono',monospace; font-size:0.8rem; color:#dbeafe; line-height:1.8; }
+  .desktop { background:linear-gradient(135deg,#12355a,#0f2a45); min-height:170px; position:relative; padding:0.8rem; }
+  .desk-icon { width:44px; text-align:center; color:#fff; font-size:0.72rem; margin-bottom:0.55rem; }
+  .desk-icon div { font-size:1.6rem; }
+  .menu-box { position:absolute; right:18px; top:48px; background:#edf2f7; color:#111827; border-radius:4px; padding:0.45rem; font-size:0.72rem; line-height:1.6; box-shadow:0 8px 20px rgba(0,0,0,0.25); }
+  .pointer { position:absolute; right:12px; bottom:16px; font-size:2rem; }
+
+  .sortable-list { list-style:none!important; padding-left:0!important; display:grid; gap:0.55rem; margin-top:0.75rem; }
+  .sortable-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:0.75rem 1rem; cursor:pointer; user-select:none; display:flex; align-items:center; justify-content:space-between; }
+  .sortable-item.selected { border-color:var(--accent2); background:rgba(56,189,248,0.08); }
+  .sortable-item.correct { border-color:var(--correct); background:rgba(52,211,153,0.08); }
+
+  .quiz-q { background: rgba(19,34,56,0.95); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .quiz-q .q-text { font-weight: 800; font-size: 1rem; margin-bottom: 1rem; line-height: 1.5; }
+  .q-num { display:inline-block; background:var(--accent); color:#1a1200; font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; padding:2px 8px; border-radius:4px; margin-right:0.5rem; }
+  .options { display:flex; flex-direction:column; gap:0.6rem; }
+  .option-btn { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:0.7rem 1rem; color:var(--text); font-family:'Nunito',sans-serif; font-size:0.92rem; cursor:pointer; text-align:left; transition:border-color 0.2s, background 0.2s, transform 0.1s; }
+  .option-btn:hover:not(:disabled) { border-color:var(--accent); background:rgba(250,204,21,0.08); transform:translateX(3px); }
+  .option-btn.correct { border-color:var(--correct); background:rgba(52,211,153,0.12); color:var(--correct); }
+  .option-btn.wrong { border-color:var(--wrong); background:rgba(251,113,133,0.12); color:var(--wrong); }
+  .option-btn:disabled { cursor:default; transform:none; }
+  .feedback { margin-top:0.75rem; padding:0.6rem 1rem; border-radius:8px; font-size:0.88rem; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:rgba(52,211,153,0.12); color:var(--correct); border:1px solid var(--correct); }
+  .feedback.bad { background:rgba(251,113,133,0.12); color:var(--wrong); border:1px solid var(--wrong); }
+  .blank-input { background:var(--surface); border:2px solid var(--border); border-radius:8px; padding:0.55rem 0.9rem; color:var(--text); font-family:'Space Mono',monospace; font-size:0.88rem; width:100%; outline:none; transition:border-color 0.2s; }
+  .blank-input:focus { border-color:var(--accent2); }
+  .blank-input.correct { border-color:var(--correct); }
+  .blank-input.wrong { border-color:var(--wrong); }
+  .check-btn { margin-top:0.75rem; background:var(--accent2); color:#1a1200; border:none; border-radius:8px; padding:0.55rem 1.35rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; cursor:pointer; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),#f59e0b); color:#1a1200; border:none; border-radius:10px; padding:0.75rem 2rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; box-shadow:0 4px 14px rgba(250,204,21,0.25); display:inline-block; margin-top:1rem; text-decoration:none; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(250,204,21,0.35); }
+  .btn-secondary { background:transparent; border:2px solid var(--accent2); color:var(--accent2); border-radius:10px; padding:0.65rem 1.5rem; font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; cursor:pointer; margin-top:1rem; text-decoration:none; display:inline-block; }
+  .score-pill { display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid var(--correct); border-radius:99px; padding:4px 14px; color:var(--correct); font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; margin-left:0.75rem; }
+  #result-banner { display:none; background:linear-gradient(135deg,#12351f,#08111f); border:2px solid var(--correct); border-radius:16px; padding:2rem; text-align:center; margin-bottom:2rem; }
+  #result-banner h2 { font-family:'Syne',sans-serif; font-size:1.6rem; color:var(--correct); }
+  #result-banner p { color:var(--muted); margin-top:0.5rem; }
+  #result-banner .big-score { font-size:3rem; font-weight:800; color:var(--accent); font-family:'Syne',sans-serif; }
+  .divider { height:1px; background:var(--border); margin:1.75rem 0; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <a class="top-link" href="index.html">← Back to WesleyICT</a><br>
+    <span class="chapter-badge">Chapter 5 · Grade 10 ICT</span>
+    <h1>Operating Systems</h1>
+    <p>Interactive O/L study lesson covering booting, software types, operating-system services, CLI and GUI, utility programs, file systems, drives, folders, and file operations.</p>
+    <div class="header-actions">
+      <a class="btn-secondary" href="#quiz" onclick="showSection('s7', document.querySelector('[data-sec=s7]'))">Jump to Quiz</a>
+      <a class="btn-secondary" href="index.html">Home</a>
+    </div>
+    <div class="progress-bar-wrap"><div id="global-progress"></div></div>
+    <div class="progress-label" id="progress-label">0 of 7 sections visited</div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tab active" data-sec="s1" onclick="showSection('s1',this)">📋 Overview</div>
+  <div class="nav-tab" data-sec="s2" onclick="showSection('s2',this)">⚡ Booting</div>
+  <div class="nav-tab" data-sec="s3" onclick="showSection('s3',this)">🧩 OS Types</div>
+  <div class="nav-tab" data-sec="s4" onclick="showSection('s4',this)">🛠 Services</div>
+  <div class="nav-tab" data-sec="s5" onclick="showSection('s5',this)">🖥 Interfaces</div>
+  <div class="nav-tab" data-sec="s6" onclick="showSection('s6',this)">📁 Files & Utilities</div>
+  <div class="nav-tab" data-sec="s7" onclick="showSection('s7',this)">✏️ Quiz</div>
+</nav>
+
+<main>
+<!-- SECTION 1 -->
+<div class="section active" id="s1">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(250,204,21,0.15)">📋</div>
+    <div><h2>What You'll Learn</h2><p>A clear O/L roadmap for Chapter 5</p></div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Chapter Targets</h3>
+    <ul>
+      <li>Explain why an <strong>Operating System</strong> is essential for using a computer.</li>
+      <li>Describe how the computer <strong>boots</strong> and loads the OS into RAM.</li>
+      <li>Differentiate <strong>system software</strong>, <strong>application software</strong>, and <strong>utility software</strong>.</li>
+      <li>Compare <strong>single-user</strong>, <strong>multi-user</strong>, <strong>multi-tasking</strong>, and <strong>real-time</strong> operating systems.</li>
+      <li>Explain OS services: process, memory, device, file, security, and network management.</li>
+      <li>Compare <strong>CLI</strong> and <strong>GUI</strong>, including WIMP components.</li>
+      <li>Use file-system ideas: drives, folders, extensions, properties, copy, cut, rename, delete, and restore.</li>
+    </ul>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🔑 Key Terms</h3>
+      <span class="concept-chip">Hardware</span>
+      <span class="concept-chip">Firmware</span>
+      <span class="concept-chip">BIOS</span>
+      <span class="concept-chip">POST</span>
+      <span class="concept-chip">Operating System</span>
+      <span class="concept-chip">Utility Software</span>
+      <span class="concept-chip">CLI</span>
+      <span class="concept-chip">GUI</span>
+      <span class="concept-chip">WIMP</span>
+      <span class="concept-chip">File Extension</span>
+    </div>
+    <div class="card">
+      <h3>🧠 Main Idea</h3>
+      <p>The Operating System works between the user, application software, other system software, and hardware. It manages resources and provides a usable interface.</p>
+      <div class="highlight teal">Exam wording: An OS is system software that manages computer hardware and software resources and provides services to the user and application software.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🖼️ The OS Position in a Computer System</h3>
+    <p>This diagram shows the OS acting as a bridge between the user, applications, system software, and hardware.</p>
+    <div class="img-card">
+      <img class="lesson-img" src="ol_handout_assets/os_interaction.png" alt="Operating system interaction diagram showing human user, application software, operating system, other system software, and hardware">
+      <div class="caption">Study tip: Whenever an exam asks “why is an operating system needed?”, mention both resource management and user interaction.</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s2', document.querySelector('[data-sec=s2]'))">Start Learning →</button>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(56,189,248,0.15)">⚡</div>
+    <div><h2>Booting and Software Types</h2><p>How the OS starts and where it fits</p></div>
+  </div>
+
+  <div class="card">
+    <h3>⚙️ Hardware, Firmware, and Software</h3>
+    <table class="nice-table">
+      <thead><tr><th>Term</th><th>Meaning</th><th>Examples / Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Hardware</strong></td><td>Physical parts of a computer with a definite shape.</td><td>Mouse, keyboard, monitor, hard disk, speaker, printer.</td></tr>
+        <tr><td><strong>Firmware</strong></td><td>Booting instructions stored in ROM.</td><td>Initial instructions used when the computer powers on.</td></tr>
+        <tr><td><strong>Software</strong></td><td>Instructions given to the computer to perform activities.</td><td>System software and application software.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>🚀 Booting Sequence</h3>
+      <ol class="timeline">
+        <li>Power on: the CPU activates the <strong>BIOS</strong>.</li>
+        <li><strong>POST</strong> checks whether the hardware is functioning.</li>
+        <li>The system reads the <strong>MBR</strong> in the boot drive using the bootstrap loader.</li>
+        <li>The Operating System is loaded from the boot drive into <strong>RAM</strong>.</li>
+        <li>The OS takes control and displays the user interface.</li>
+      </ol>
+      <div class="highlight">Booting means loading the Operating System into RAM.</div>
+    </div>
+    <div class="card">
+      <h3>🗂️ Software Classification</h3>
+      <div class="mini-grid">
+        <div class="mini-card"><strong>System Software</strong><span>Operating systems, utility software, and language translators.</span></div>
+        <div class="mini-card"><strong>Application Software</strong><span>Word processing, spreadsheets, databases, games, and web browsers.</span></div>
+        <div class="mini-card"><strong>Language Translators</strong><span>Assembler, compiler, and interpreter translate programs to machine language.</span></div>
+        <div class="mini-card"><strong>Utility Software</strong><span>Helps manage, protect, and analyze the computer.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2)">
+    <h3 style="color:var(--accent2)">✍️ Quick Check</h3>
+    <p>During booting, where is the Operating System loaded?</p>
+    <div id="qc1" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Into the keyboard</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,true)">Into RAM</button>
+      <button class="option-btn" onclick="quickCheck('qc1',this,false)">Into the mouse driver only</button>
+    </div>
+    <div id="qc1-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s3', document.querySelector('[data-sec=s3]'))">Next: OS Types →</button>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(250,204,21,0.15)">🧩</div>
+    <div><h2>Operating Systems and Their Types</h2><p>Examples and classifications</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🌍 Examples of Operating Systems</h3>
+    <div class="mini-grid">
+      <div class="mini-card"><strong>Microsoft Windows</strong><span>Popular proprietary OS. Examples include Windows XP, Vista, 7, and 8 in the textbook.</span></div>
+      <div class="mini-card"><strong>Apple Mac OS</strong><span>Proprietary OS developed by Apple and used on Apple computers.</span></div>
+      <div class="mini-card"><strong>Ubuntu</strong><span>Free and open-source OS based on Linux.</span></div>
+      <div class="mini-card"><strong>Android</strong><span>Mobile operating system developed by Google and based on open-source software.</span></div>
+      <div class="mini-card"><strong>Hanthana Linux</strong><span>A Linux-based operating system that can be downloaded free of charge.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Four Main Types</h3>
+    <table class="nice-table">
+      <thead><tr><th>Type</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Single-user OS</strong></td><td>Provides service to one person at a time.</td><td>MS-DOS</td></tr>
+        <tr><td><strong>Multi-user OS</strong></td><td>Allows multiple users to use a system simultaneously.</td><td>Linux, Windows Server</td></tr>
+        <tr><td><strong>Multi-tasking OS</strong></td><td>Allows multiple processes or tasks to run at the same time.</td><td>Windows 7/8, Ubuntu, Mac OS</td></tr>
+        <tr><td><strong>Real-time OS</strong></td><td>Gives output in real time without observable delays.</td><td>ATM machines, calculators, scientific devices</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🎮 OS Type Chooser</h3>
+    <p>Click the best OS type for the situation.</p>
+    <div class="lab-panel">
+      <p id="type-scenario" style="margin-bottom:0.85rem"><strong>Scenario:</strong> Several users connect to one server computer at the same time.</p>
+      <div class="switch-row">
+        <button class="choice-btn" onclick="checkType(this,'multi-user')">Multi-user</button>
+        <button class="choice-btn" onclick="checkType(this,'single-user')">Single-user</button>
+        <button class="choice-btn" onclick="checkType(this,'real-time')">Real-time</button>
+      </div>
+      <div id="type-feedback" class="feedback"></div>
+      <button class="btn-secondary" onclick="nextTypeScenario()">Try another scenario</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s4', document.querySelector('[data-sec=s4]'))">Next: OS Services →</button>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(167,139,250,0.15)">🛠</div>
+    <div><h2>Services of an Operating System</h2><p>Resource management and user interface support</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🧭 Two Main Service Areas</h3>
+    <div class="two-col">
+      <div class="mini-card"><strong>1. Managing Hardware</strong><span>The OS manages CPU processes, memory, devices, files, security, and network resources.</span></div>
+      <div class="mini-card"><strong>2. Providing a User Interface</strong><span>The OS provides a way for users to give commands using CLI or GUI.</span></div>
+    </div>
+    <div class="img-card">
+      <img class="lesson-img" src="ol_handout_assets/resource_management.png" alt="Resource management diagram showing system software managing hardware resources">
+      <div class="caption">The OS coordinates resources such as CPU, RAM, disk, devices, and applications.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Click a Service to Study It</h3>
+    <div class="service-grid">
+      <div class="service-card" onclick="showService(this,'process')"><strong>Process Management</strong><span>CPU time, process order, and running programs.</span></div>
+      <div class="service-card" onclick="showService(this,'memory')"><strong>Memory Management</strong><span>Allocating and freeing RAM for processes.</span></div>
+      <div class="service-card" onclick="showService(this,'device')"><strong>Device Management</strong><span>Device drivers, controllers, and plug-and-play devices.</span></div>
+      <div class="service-card" onclick="showService(this,'file')"><strong>File Management</strong><span>Create, delete, rename, move, and back up files/folders.</span></div>
+      <div class="service-card" onclick="showService(this,'security')"><strong>Security Management</strong><span>Protects against unauthorized access and some threats.</span></div>
+      <div class="service-card" onclick="showService(this,'network')"><strong>Network Management</strong><span>Supports wired/wireless devices and remote access.</span></div>
+    </div>
+    <div id="service-explain" class="highlight teal">Select a service card above to see its O/L explanation.</div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent)">
+    <h3>✍️ Quick Check</h3>
+    <p>Which OS service is mainly responsible for installing and controlling a printer driver?</p>
+    <div id="qc2" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">Memory Management</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,true)">Device Management</button>
+      <button class="option-btn" onclick="quickCheck('qc2',this,false)">Network Management only</button>
+    </div>
+    <div id="qc2-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s5', document.querySelector('[data-sec=s5]'))">Next: User Interfaces →</button>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(249,115,22,0.15)">🖥</div>
+    <div><h2>User Interfaces: CLI and GUI</h2><p>How users give instructions to the computer</p></div>
+  </div>
+
+  <div class="compare-wrap">
+    <div class="compare-card">
+      <h4>⌨️ Command Line Interface (CLI)</h4>
+      <p>Commands are typed at a prompt using the keyboard. The correct syntax must be used.</p>
+      <div class="fake-window">
+        <div class="fake-bar">Command Prompt</div>
+        <div class="fake-body">C:\Users\Student&gt; dir<br>Documents&nbsp;&nbsp;Pictures&nbsp;&nbsp;ICT<br>C:\Users\Student&gt; date<br>The current date is 23/06/2026</div>
+      </div>
+      <div class="highlight teal">CLI is powerful but less beginner-friendly because commands must be remembered accurately.</div>
+    </div>
+    <div class="compare-card">
+      <h4>🪟 Graphical User Interface (GUI)</h4>
+      <p>Uses graphics and allows users to work with a mouse, touch, icons, menus, and windows.</p>
+      <div class="fake-window">
+        <div class="fake-bar">Desktop</div>
+        <div class="desktop">
+          <div class="desk-icon"><div>📁</div>Files</div>
+          <div class="desk-icon"><div>🌐</div>Web</div>
+          <div class="desk-icon"><div>🗑️</div>Bin</div>
+          <div class="menu-box">Open<br>Rename<br>Copy<br>Delete</div>
+          <div class="pointer">🖱️</div>
+        </div>
+      </div>
+      <div class="highlight">GUI is generally more convenient for beginners than CLI.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧩 WIMP Components</h3>
+    <p>Modern GUI environments commonly use <strong>WIMP</strong>:</p>
+    <div class="mini-grid">
+      <div class="mini-card"><strong>Windows</strong><span>Rectangular working areas for apps and folders.</span></div>
+      <div class="mini-card"><strong>Icons</strong><span>Small pictures representing programs, files, folders, or devices.</span></div>
+      <div class="mini-card"><strong>Menus</strong><span>Lists of commands/options such as Open, Copy, Delete, and Properties.</span></div>
+      <div class="mini-card"><strong>Pointer</strong><span>The cursor controlled by a mouse, touchpad, or finger.</span></div>
+    </div>
+    <div class="img-card">
+      <img class="lesson-img" src="ol_handout_assets/gui_wimp.png" alt="Graphical user interface diagram showing windows, icons, menus, and pointer">
+      <div class="caption">Remember: WIMP = Windows, Icons, Menus, Pointer.</div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent2)">
+    <h3 style="color:var(--accent2)">✍️ Quick Check</h3>
+    <p>What does the letter <strong>M</strong> stand for in WIMP?</p>
+    <div id="qc3" class="options" style="margin-top:0.75rem">
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">Memory</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,true)">Menus</button>
+      <button class="option-btn" onclick="quickCheck('qc3',this,false)">Monitor</button>
+    </div>
+    <div id="qc3-fb" class="feedback"></div>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s6', document.querySelector('[data-sec=s6]'))">Next: Files & Utilities →</button>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="sec-header">
+    <div class="sec-icon" style="background:rgba(56,189,248,0.15)">📁</div>
+    <div><h2>Utility Programs and File Systems</h2><p>Practical O/L file management</p></div>
+  </div>
+
+  <div class="card">
+    <h3>🧰 Utility Programs in an OS</h3>
+    <div class="mini-grid">
+      <div class="mini-card"><strong>Backup Software</strong><span>Copies files and creates backups of drives.</span></div>
+      <div class="mini-card"><strong>Disk Scanner</strong><span>Checks errors in the hard drive.</span></div>
+      <div class="mini-card"><strong>Defragmentation</strong><span>Rearranges fragmented data to improve disk efficiency.</span></div>
+      <div class="mini-card"><strong>File Compression</strong><span>Reduces large files into smaller files.</span></div>
+      <div class="mini-card"><strong>Task Manager</strong><span>Shows processes, programs, and system status.</span></div>
+      <div class="mini-card"><strong>Anti-virus</strong><span>Identifies and removes malicious software.</span></div>
+      <div class="mini-card"><strong>Clipboard</strong><span>Temporarily stores copied or cut data.</span></div>
+      <div class="mini-card"><strong>Network Utilities</strong><span>Analyze connectivity and configure network settings.</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3>💽 Partitioning, Formatting, Defragmentation</h3>
+      <table class="nice-table">
+        <thead><tr><th>Process</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Partitioning</strong></td><td>Dividing one physical drive into multiple logical drives.</td></tr>
+          <tr><td><strong>Formatting</strong></td><td>Preparing a storage device so data can be stored using a file system.</td></tr>
+          <tr><td><strong>Defragmentation</strong></td><td>Rearranging fragmented data so the disk works more efficiently.</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight warn">Warning: Re-partitioning or formatting can delete existing data. Always make a backup first.</div>
+    </div>
+    <div class="card">
+      <h3>🖼️ Disk Visuals</h3>
+      <div class="img-card">
+        <img class="lesson-img" src="ol_handout_assets/partition_drive.png" alt="Hard disk before and after partitioning">
+        <div class="caption">Partitioning makes logical drives such as C: and D: in Windows.</div>
+      </div>
+      <div class="img-card">
+        <img class="lesson-img" src="ol_handout_assets/defrag_before_after.png" alt="Before and after defragmentation">
+        <div class="caption">Defragmentation rearranges file parts so reading becomes faster on affected disks.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📄 File Names, Extensions, and Properties</h3>
+    <p>A file name normally has two parts: <strong>file name</strong> and <strong>extension</strong>. The extension helps the OS identify the file type.</p>
+    <div class="two-col">
+      <div>
+        <table class="nice-table">
+          <thead><tr><th>Extension</th><th>File Type</th></tr></thead>
+          <tbody>
+            <tr><td><code>.exe</code></td><td>Executable</td></tr>
+            <tr><td><code>.docx</code></td><td>Word document</td></tr>
+            <tr><td><code>.xlsx</code></td><td>Excel spreadsheet</td></tr>
+            <tr><td><code>.pptx</code></td><td>PowerPoint presentation</td></tr>
+            <tr><td><code>.accdb</code></td><td>Access database</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="img-card" style="margin-top:0">
+        <img class="lesson-img" src="ol_handout_assets/file_extensions.png" alt="File names and extensions example">
+        <div class="caption">The full stop separates the file name from the extension.</div>
+      </div>
+    </div>
+    <div class="highlight teal">File properties can include file type, size, location, created/modified date and time, and storage space used on disk.</div>
+  </div>
+
+  <div class="card">
+    <h3>🎮 File Operation Practice</h3>
+    <p>Click the steps in the correct order for <strong>Copy and Paste</strong>.</p>
+    <ul class="sortable-list" id="copySteps">
+      <li class="sortable-item" data-order="3" onclick="pickStep(this)">Select the destination drive or folder <span>↕</span></li>
+      <li class="sortable-item" data-order="1" onclick="pickStep(this)">Select the file or folder to be copied <span>↕</span></li>
+      <li class="sortable-item" data-order="4" onclick="pickStep(this)">Select Paste or press Ctrl + V <span>↕</span></li>
+      <li class="sortable-item" data-order="2" onclick="pickStep(this)">Select Copy or press Ctrl + C <span>↕</span></li>
+    </ul>
+    <div id="step-feedback" class="feedback"></div>
+    <button class="btn-secondary" onclick="resetSteps()">Reset Activity</button>
+  </div>
+
+  <button class="btn-primary" onclick="showSection('s7', document.querySelector('[data-sec=s7]'))">Next: Quiz →</button>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+  <div class="sec-header" id="quiz">
+    <div class="sec-icon" style="background:rgba(250,204,21,0.15)">✏️</div>
+    <div><h2>Chapter Quiz</h2><p>20 questions · instant feedback <span class="score-pill">Score: <span id="score-now">0</span>/20</span></p></div>
+  </div>
+
+  <div id="result-banner">
+    <h2>Quiz Complete</h2>
+    <div class="big-score"><span id="final-score">0</span>/20</div>
+    <p id="final-msg">Review the chapter and try again.</p>
+    <button class="btn-secondary" onclick="resetQuiz()">Reset Quiz</button>
+  </div>
+
+  <div class="quiz-q" id="q1"><div class="q-text"><span class="q-num">Q1</span> The Operating System is mainly classified as:</div><div class="options" id="q1-opts"><button class="option-btn" onclick="answerQ('q1',this,false)">Application software</button><button class="option-btn" data-correct="true" onclick="answerQ('q1',this,true)">System software</button><button class="option-btn" onclick="answerQ('q1',this,false)">Hardware</button></div><div id="q1-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q2"><div class="q-text"><span class="q-num">Q2</span> Booting means:</div><div class="options" id="q2-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q2',this,true)">Loading the OS into RAM</button><button class="option-btn" onclick="answerQ('q2',this,false)">Deleting temporary files</button><button class="option-btn" onclick="answerQ('q2',this,false)">Printing a document</button></div><div id="q2-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q3"><div class="q-text"><span class="q-num">Q3</span> POST stands for:</div><div class="options" id="q3-opts"><button class="option-btn" onclick="answerQ('q3',this,false)">Power Output Storage Test</button><button class="option-btn" data-correct="true" onclick="answerQ('q3',this,true)">Power On Self-Test</button><button class="option-btn" onclick="answerQ('q3',this,false)">Program Operation System Tool</button></div><div id="q3-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q4"><div class="q-text"><span class="q-num">Q4</span> Which is an example of application software?</div><div class="options" id="q4-opts"><button class="option-btn" onclick="answerQ('q4',this,false)">Operating System</button><button class="option-btn" onclick="answerQ('q4',this,false)">Device driver only</button><button class="option-btn" data-correct="true" onclick="answerQ('q4',this,true)">Word processing software</button></div><div id="q4-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q5"><div class="q-text"><span class="q-num">Q5</span> Which OS type provides service to one person at a time?</div><div class="options" id="q5-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q5',this,true)">Single-user OS</button><button class="option-btn" onclick="answerQ('q5',this,false)">Multi-user OS</button><button class="option-btn" onclick="answerQ('q5',this,false)">Real-time OS</button></div><div id="q5-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q6"><div class="q-text"><span class="q-num">Q6</span> A server used by several users at the same time commonly uses:</div><div class="options" id="q6-opts"><button class="option-btn" onclick="answerQ('q6',this,false)">Single-user OS</button><button class="option-btn" data-correct="true" onclick="answerQ('q6',this,true)">Multi-user OS</button><button class="option-btn" onclick="answerQ('q6',this,false)">Only CLI</button></div><div id="q6-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q7"><div class="q-text"><span class="q-num">Q7</span> Running a browser and word processor at the same time is related to:</div><div class="options" id="q7-opts"><button class="option-btn" onclick="answerQ('q7',this,false)">Formatting</button><button class="option-btn" data-correct="true" onclick="answerQ('q7',this,true)">Multi-tasking</button><button class="option-btn" onclick="answerQ('q7',this,false)">File extension hiding</button></div><div id="q7-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q8"><div class="q-text"><span class="q-num">Q8</span> Which OS service allocates CPU time and orders running tasks?</div><div class="options" id="q8-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q8',this,true)">Process Management</button><button class="option-btn" onclick="answerQ('q8',this,false)">File Management</button><button class="option-btn" onclick="answerQ('q8',this,false)">Disk Formatting</button></div><div id="q8-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q9"><div class="q-text"><span class="q-num">Q9</span> Which OS service allocates and frees RAM?</div><div class="options" id="q9-opts"><button class="option-btn" onclick="answerQ('q9',this,false)">Network Management</button><button class="option-btn" data-correct="true" onclick="answerQ('q9',this,true)">Memory Management</button><button class="option-btn" onclick="answerQ('q9',this,false)">Security Management only</button></div><div id="q9-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q10"><div class="q-text"><span class="q-num">Q10</span> Device drivers are mainly connected with:</div><div class="options" id="q10-opts"><button class="option-btn" onclick="answerQ('q10',this,false)">File extension names only</button><button class="option-btn" data-correct="true" onclick="answerQ('q10',this,true)">Device Management</button><button class="option-btn" onclick="answerQ('q10',this,false)">Boot drive letters only</button></div><div id="q10-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q11"><div class="q-text"><span class="q-num">Q11</span> CLI stands for:</div><div class="options" id="q11-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q11',this,true)">Command Line Interface</button><button class="option-btn" onclick="answerQ('q11',this,false)">Computer Language Input</button><button class="option-btn" onclick="answerQ('q11',this,false)">Control Link Internet</button></div><div id="q11-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q12"><div class="q-text"><span class="q-num">Q12</span> GUI stands for:</div><div class="options" id="q12-opts"><button class="option-btn" onclick="answerQ('q12',this,false)">General User Input</button><button class="option-btn" data-correct="true" onclick="answerQ('q12',this,true)">Graphical User Interface</button><button class="option-btn" onclick="answerQ('q12',this,false)">Graphic Utility Instruction</button></div><div id="q12-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q13"><div class="q-text"><span class="q-num">Q13</span> In WIMP, I stands for:</div><div class="options" id="q13-opts"><button class="option-btn" onclick="answerQ('q13',this,false)">Internet</button><button class="option-btn" data-correct="true" onclick="answerQ('q13',this,true)">Icons</button><button class="option-btn" onclick="answerQ('q13',this,false)">Instructions</button></div><div id="q13-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q14"><div class="q-text"><span class="q-num">Q14</span> Which utility identifies and removes malicious software?</div><div class="options" id="q14-opts"><button class="option-btn" onclick="answerQ('q14',this,false)">Clipboard</button><button class="option-btn" data-correct="true" onclick="answerQ('q14',this,true)">Anti-virus software</button><button class="option-btn" onclick="answerQ('q14',this,false)">Screensaver only</button></div><div id="q14-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q15"><div class="q-text"><span class="q-num">Q15</span> Partitioning means:</div><div class="options" id="q15-opts"><button class="option-btn" data-correct="true" onclick="answerQ('q15',this,true)">Dividing a physical drive into logical drives</button><button class="option-btn" onclick="answerQ('q15',this,false)">Typing a command at a prompt</button><button class="option-btn" onclick="answerQ('q15',this,false)">Changing a file icon only</button></div><div id="q15-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q16"><div class="q-text"><span class="q-num">Q16</span> Formatting prepares a storage device for:</div><div class="options" id="q16-opts"><button class="option-btn" onclick="answerQ('q16',this,false)">Displaying menus only</button><button class="option-btn" data-correct="true" onclick="answerQ('q16',this,true)">Storing data</button><button class="option-btn" onclick="answerQ('q16',this,false)">Changing monitor brightness</button></div><div id="q16-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q17"><div class="q-text"><span class="q-num">Q17</span> Defragmentation is used to:</div><div class="options" id="q17-opts"><button class="option-btn" onclick="answerQ('q17',this,false)">Create a file extension</button><button class="option-btn" data-correct="true" onclick="answerQ('q17',this,true)">Rearrange fragmented data for efficiency</button><button class="option-btn" onclick="answerQ('q17',this,false)">Install a keyboard</button></div><div id="q17-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q18"><div class="q-text"><span class="q-num">Q18</span> The extension <code>.pptx</code> normally indicates:</div><div class="options" id="q18-opts"><button class="option-btn" onclick="answerQ('q18',this,false)">Executable file</button><button class="option-btn" onclick="answerQ('q18',this,false)">Excel spreadsheet</button><button class="option-btn" data-correct="true" onclick="answerQ('q18',this,true)">PowerPoint presentation</button></div><div id="q18-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q19"><div class="q-text"><span class="q-num">Q19</span> Complete the sentence:</div><p>The temporary storage used during cut/copy and paste is called the <strong>________</strong>.</p><input class="blank-input" id="q19-input" placeholder="Type your answer here…"><button class="check-btn" onclick="checkFill('q19','clipboard')">Check Answer</button><div id="q19-fb" class="feedback"></div></div>
+  <div class="quiz-q" id="q20"><div class="q-text"><span class="q-num">Q20</span> Complete the sentence:</div><p>Deleted files and folders are temporarily placed in the <strong>________</strong>.</p><input class="blank-input" id="q20-input" placeholder="Type your answer here…"><button class="check-btn" onclick="checkFill('q20','recycle bin|trash')">Check Answer</button><div id="q20-fb" class="feedback"></div></div>
+
+  <button class="btn-primary" id="finish-btn" onclick="finishQuiz()" style="display:none">See My Results</button>
+</div>
+</main>
+
+<script>
+// Navigation and progress
+const visited = new Set(['s1']);
+const totalSecs = 7;
+function showSection(id, tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (tab) tab.classList.add('active');
+  visited.add(id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSecs) * 100);
+  document.getElementById('global-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = visited.size + ' of ' + totalSecs + ' sections visited';
+  visited.forEach(id => {
+    const tab = document.querySelector('[data-sec="' + id + '"]');
+    if (tab && !tab.classList.contains('active')) tab.classList.add('done');
+  });
+}
+updateProgress();
+
+function quickCheck(id, btn, correct) {
+  const container = document.getElementById(id);
+  container.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not quite. Review the explanation above.';
+  }
+}
+
+const typeScenarios = [
+  {text:'Several users connect to one server computer at the same time.', ans:'multi-user'},
+  {text:'Only one person uses the operating system at a time.', ans:'single-user'},
+  {text:'An ATM must respond without observable delay.', ans:'real-time'},
+  {text:'A student opens a browser, word processor, and music player together.', ans:'multi-tasking'}
+];
+let typeIndex = 0;
+function nextTypeScenario() {
+  typeIndex = (typeIndex + 1) % typeScenarios.length;
+  document.getElementById('type-scenario').innerHTML = '<strong>Scenario:</strong> ' + typeScenarios[typeIndex].text;
+  document.querySelectorAll('.choice-btn').forEach(b => { b.classList.remove('selected'); b.disabled = false; });
+  const fb = document.getElementById('type-feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+}
+function checkType(btn, ans) {
+  const correct = ans === typeScenarios[typeIndex].ans;
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  btn.classList.add('selected');
+  const fb = document.getElementById('type-feedback');
+  if (correct) {
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not quite. Correct answer: ' + typeScenarios[typeIndex].ans + '.';
+  }
+}
+
+const serviceText = {
+  process: '<strong>Process Management:</strong> A running program, or a part of it, is a process. The OS manages CPU time, memory, input/output devices, and the order in which processes run.',
+  memory: '<strong>Memory Management:</strong> The OS allocates enough RAM for each process and frees memory when a process ends. This helps the computer run smoothly.',
+  device: '<strong>Device Management:</strong> The OS controls peripheral devices using device drivers and device controllers. Plug-and-play devices can install drivers automatically.',
+  file: '<strong>File Management:</strong> The OS helps create, save, delete, rename, move, organize, and back up files and folders.',
+  security: '<strong>Security Management:</strong> The OS helps prevent unauthorized access and protects the system from some threats, often with help from security utilities.',
+  network: '<strong>Network Management:</strong> The OS supports wired/wireless connectivity, sharing devices, remote access, and data communication over networks.'
+};
+function showService(card, key) {
+  document.querySelectorAll('.service-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  document.getElementById('service-explain').innerHTML = serviceText[key];
+}
+
+let pickedSteps = [];
+function pickStep(el) {
+  if (el.classList.contains('correct')) return;
+  const next = pickedSteps.length + 1;
+  const order = Number(el.dataset.order);
+  const fb = document.getElementById('step-feedback');
+  if (order === next) {
+    el.classList.add('correct');
+    el.querySelector('span').textContent = '✓';
+    pickedSteps.push(order);
+    fb.className = 'feedback show ok';
+    fb.textContent = pickedSteps.length === 4 ? 'Excellent. Copy and Paste order is correct.' : 'Correct step. Continue.';
+  } else {
+    el.classList.add('selected');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not the next step. Think about what must happen first.';
+    setTimeout(() => el.classList.remove('selected'), 500);
+  }
+}
+function resetSteps() {
+  pickedSteps = [];
+  document.querySelectorAll('.sortable-item').forEach(el => { el.classList.remove('correct','selected'); el.querySelector('span').textContent = '↕'; });
+  const fb = document.getElementById('step-feedback');
+  fb.className = 'feedback';
+  fb.textContent = '';
+}
+
+// Quiz scoring
+let score = 0;
+let answered = 0;
+const totalQ = 20;
+function answerQ(qid, btn, correct) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  box.dataset.answered = 'true';
+  const opts = document.getElementById(qid + '-opts');
+  opts.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.correct === 'true') b.classList.add('correct');
+  });
+  const fb = document.getElementById(qid + '-fb');
+  answered++;
+  if (correct) {
+    score++;
+    btn.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Incorrect. The correct answer is highlighted.';
+  }
+  updateScore();
+  checkShowFinish();
+}
+function checkFill(qid, answersStr) {
+  const box = document.getElementById(qid);
+  if (box.dataset.answered === 'true') return;
+  const input = document.getElementById(qid + '-input');
+  const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const answers = answersStr.split('|').map(a => a.trim().toLowerCase());
+  const fb = document.getElementById(qid + '-fb');
+  box.dataset.answered = 'true';
+  answered++;
+  if (answers.includes(val)) {
+    score++;
+    input.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.textContent = 'Correct.';
+  } else {
+    input.classList.add('wrong');
+    fb.className = 'feedback show bad';
+    fb.textContent = 'Not correct. Accepted answer: ' + answers[0] + '.';
+  }
+  input.disabled = true;
+  updateScore();
+  checkShowFinish();
+}
+function updateScore() { document.getElementById('score-now').textContent = score; }
+function checkShowFinish() { if (answered >= totalQ) document.getElementById('finish-btn').style.display = 'inline-block'; }
+function finishQuiz() {
+  document.getElementById('final-score').textContent = score;
+  let msg = 'Review the chapter and try again.';
+  if (score >= 18) msg = 'Excellent. You are ready for O/L style questions on operating systems.';
+  else if (score >= 14) msg = 'Good work. Revise utilities, OS services, and file-system terms.';
+  else if (score >= 10) msg = 'Fair attempt. Revisit booting, OS types, and file operations.';
+  document.getElementById('final-msg').textContent = msg;
+  document.getElementById('result-banner').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetQuiz() { location.reload(); }
+</script>
+</body>
+</html>
