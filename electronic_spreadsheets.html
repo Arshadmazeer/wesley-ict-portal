@@ -515,13 +515,27 @@
     </section>
 
     <section id="quiz" class="quiz-box">
-      <h2>Quiz</h2>
-      <p>
-        Test your understanding of electronic spreadsheets, formulas, functions,
-        formatting, sorting, and charts.
-      </p>
-      <p>20 Questions · Based on this chapter's lesson content</p>
-      <a href="#" class="btn">Start Quiz</a>
+      <h2>✏️ Quiz</h2>
+      <p>Test your understanding of electronic spreadsheets, formulas, functions, formatting, sorting, and charts.</p>
+      <p style="margin-bottom:18px;">20 Questions · Based on this chapter's lesson content</p>
+
+      <div id="quiz-start">
+        <button class="btn" onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <div id="quiz-area" style="display:none;">
+        <div id="quiz-progress" style="margin-bottom:16px;color:#b8c1ec;font-size:0.95rem;"></div>
+        <div id="quiz-question" style="font-size:1.15rem;font-weight:600;margin-bottom:18px;color:#eef2ff;"></div>
+        <div id="quiz-options" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div id="quiz-feedback" style="margin-top:14px;font-weight:600;font-size:1rem;min-height:24px;"></div>
+        <button id="quiz-next" class="btn" onclick="nextQuestion()" style="display:none;margin-top:16px;">Next →</button>
+      </div>
+
+      <div id="quiz-result" style="display:none;text-align:center;padding:10px 0;">
+        <div id="result-score" style="font-size:2.5rem;font-weight:800;margin-bottom:10px;"></div>
+        <div id="result-msg" style="color:#eef2ff;margin-bottom:20px;font-size:1.05rem;"></div>
+        <button class="btn" onclick="restartQuiz()">Try Again</button>
+      </div>
     </section>
   </main>
 
@@ -530,5 +544,103 @@
       © 2025 Wesley College ICT Department
     </div>
   </footer>
+<script>
+const questions = [
+  {q:"What is an electronic spreadsheet?", options:["A word processing application","An interactive computer application for organizing and calculating data in tabular form","A program used to design images","A tool for sending emails"], ans:1},
+  {q:"What is a workbook?", options:["A single sheet of rows and columns","A type of chart","A spreadsheet file that can contain one or more worksheets","A formula used for calculations"], ans:2},
+  {q:"What is a cell in a spreadsheet?", options:["A row of data","A column of data","The intersection of a row and a column","The formula bar"], ans:2},
+  {q:"Which symbol MUST be typed first before entering a formula?", options:["+","-","=","*"], ans:2},
+  {q:"What does the Name Box display?", options:["The formula in the current cell","The currently selected cell address","The name of the workbook","The number of rows"], ans:1},
+  {q:"Columns in a spreadsheet are labeled with:", options:["Numbers starting from 1","Letters starting from A","Roman numerals","Symbols"], ans:1},
+  {q:"Rows in a spreadsheet are labeled with:", options:["Letters","Symbols","Numbers starting from 1","Roman numerals"], ans:2},
+  {q:"Which function adds all numbers in a cell range?", options:["AVERAGE","COUNT","MAX","SUM"], ans:3},
+  {q:"What does the AVERAGE function do?", options:["Finds the highest value","Finds the total of all values","Finds the mean value of a range","Counts the number of cells"], ans:2},
+  {q:"Which function finds the highest value in a range?", options:["MIN","SUM","MAX","COUNT"], ans:2},
+  {q:"What is the correct formula to add cells C2 and D2?", options:["C2+D2","SUM(C2,D2)","=C2+D2","=ADD(C2,D2)"], ans:2},
+  {q:"What does the formula =E2-F2 do?", options:["Multiplies E2 by F2","Adds E2 and F2","Subtracts F2 from E2","Divides E2 by F2"], ans:2},
+  {q:"Which symbol is used for multiplication in a spreadsheet formula?", options:["/","x","×","*"], ans:3},
+  {q:"What does the COUNT function count?", options:["All cells in a range","Cells that contain numbers only","Cells that are not empty","Cells with text only"], ans:1},
+  {q:"What is the difference between COUNT and COUNTA?", options:["There is no difference","COUNT counts numbers only; COUNTA counts all non-empty cells","COUNTA counts numbers only; COUNT counts all cells","COUNT is for columns; COUNTA is for rows"], ans:1},
+  {q:"Which tool is used to combine multiple adjacent cells and align text to the centre?", options:["Wrap Text","Borders","Merge and Center","Fill Color"], ans:2},
+  {q:"What chart type is best for showing data as percentages of a whole?", options:["Bar Chart","Line Chart","Pie Chart","Scatter Chart"], ans:2},
+  {q:"To sort data alphabetically A to Z in Excel, which menu is used?", options:["Insert","Page Layout","Home → Sort & Filter","Formulas"], ans:2},
+  {q:"What does the 'Fill Handle' allow you to do?", options:["Change the fill colour of a cell","Copy a formula to adjacent cells by dragging","Insert a new row","Delete cell contents"], ans:1},
+  {q:"Which of these is NOT a common chart type in spreadsheets?", options:["Column Chart","Pie Chart","Flow Chart","Bar Chart"], ans:2}
+];
+
+let current = 0, score = 0, answered = false;
+
+function startQuiz(){
+  current = 0; score = 0; answered = false;
+  document.getElementById('quiz-start').style.display='none';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  showQuestion();
+}
+
+function showQuestion(){
+  answered = false;
+  const q = questions[current];
+  document.getElementById('quiz-progress').textContent = `Question ${current+1} of ${questions.length}`;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-next').style.display='none';
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.style.cssText='padding:12px 16px;background:#16214b;border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:#d7e0ff;font-size:0.97rem;text-align:left;cursor:pointer;transition:0.2s;';
+    btn.onmouseover=()=>{ if(!answered) btn.style.background='#24305f'; };
+    btn.onmouseout=()=>{ if(!answered) btn.style.background='#16214b'; };
+    btn.onclick=()=>checkAnswer(i, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function checkAnswer(i, btn){
+  if(answered) return;
+  answered = true;
+  const correct = questions[current].ans;
+  const allBtns = document.getElementById('quiz-options').querySelectorAll('button');
+  allBtns[correct].style.background='#0f6b4f';
+  allBtns[correct].style.borderColor='#55d6be';
+  if(i === correct){
+    score++;
+    document.getElementById('quiz-feedback').style.color='#55d6be';
+    document.getElementById('quiz-feedback').textContent='✅ Correct!';
+  } else {
+    btn.style.background='#6b1a1a';
+    btn.style.borderColor='#ff6b6b';
+    document.getElementById('quiz-feedback').style.color='#ff9090';
+    document.getElementById('quiz-feedback').textContent='❌ Incorrect. The correct answer is highlighted in green.';
+  }
+  document.getElementById('quiz-next').style.display='inline-block';
+}
+
+function nextQuestion(){
+  current++;
+  if(current >= questions.length){
+    showResult();
+  } else {
+    showQuestion();
+  }
+}
+
+function showResult(){
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('quiz-result').style.display='block';
+  const pct = Math.round((score/questions.length)*100);
+  document.getElementById('result-score').textContent = `${score} / ${questions.length}`;
+  let msg = '';
+  if(pct>=90) msg='🎉 Excellent! Outstanding work!';
+  else if(pct>=70) msg='👍 Good job! Review the missed questions.';
+  else if(pct>=50) msg='📚 Keep studying — you\'re getting there!';
+  else msg='💡 Review the chapter and try again.';
+  document.getElementById('result-msg').textContent = msg;
+}
+
+function restartQuiz(){ startQuiz(); }
+</script>
 </body>
 </html>
